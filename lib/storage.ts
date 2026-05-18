@@ -88,6 +88,20 @@ export function getRecordsForDates(dateStrings: string[]): RecordsMap {
   return result;
 }
 
+/** 모든 기록 반환 — sanitize 적용. export 전용 public API */
+export function getAllRecords(): DayRecord[] {
+  const records = readAll();
+  const result: DayRecord[] = [];
+  for (const [date, r] of Object.entries(records)) {
+    try {
+      result.push(sanitizeRecord(r));
+    } catch {
+      result.push({ date, soju: 0, beer: 0, updatedAt: Date.now() });
+    }
+  }
+  return result.sort((a, b) => a.date.localeCompare(b.date));
+}
+
 /** LocalStorage 지원 여부 확인 (시크릿 모드 등) */
 export function isStorageAvailable(): boolean {
   if (isSSR()) return false;

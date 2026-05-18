@@ -235,19 +235,19 @@
 
 **목적**: LocalStorage 백업을 사용자 기기에 JSON으로 저장한다. 서버 전송은 없다.
 
-- [ ] `lib/storage.ts`
+- [x] `lib/storage.ts`
   - `getAllRecords()` 또는 `getSanitizedRecords()` public API 추가.
   - private `readAll()`을 외부에서 직접 참조하지 않음.
   - 모든 레코드는 sanitize된 값만 반환.
-- [ ] `lib/export.ts` 신규
+- [x] `lib/export.ts` 신규
   - `serializeExport(records)` 순수 함수.
   - `exportRecordsAsJson()` 다운로드 함수.
   - wrap 형태: `{ version: 1, exportedAt: ISO, records: [...] }`.
   - 파일명: `how-is-your-liver-records-YYYY-MM-DD.json`.
-- [ ] 노출 위치
+- [x] 노출 위치
   - 주간 페이지 하단 작은 ghost 버튼.
   - 카피: "기기 안에만 저장됩니다. 서버로 보내지지 않아요."
-- [ ] `tests/export.test.ts`
+- [x] `tests/export.test.ts`
   - `serializeExport` 결과 검증.
   - 손상/누락 필드 정규화 검증.
 

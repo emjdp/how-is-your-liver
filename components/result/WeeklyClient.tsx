@@ -7,6 +7,7 @@ import { getRecordsForDates } from '@/lib/storage'
 import { computeWeek, computeDay } from '@/lib/calculate'
 import { getWeekTier, isHighTier } from '@/lib/tiers'
 import { safetyLineLong } from '@/lib/safety-copy'
+import { exportRecordsAsJson } from '@/lib/export'
 import { Button } from '@/components/ui/Button'
 import { Toast } from '@/components/ui/Toast'
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
@@ -168,6 +169,28 @@ export function WeeklyClient() {
         >
           * {safetyLineLong}
         </p>
+
+        {/* JSON export */}
+        <div className="flex flex-col items-center gap-2 pt-2">
+          <p
+            className="text-[0.7rem]"
+            style={{ color: 'var(--color-muted)' }}
+          >
+            기기 안에만 저장됩니다. 서버로 보내지지 않아요.
+          </p>
+          <button
+            type="button"
+            onClick={exportRecordsAsJson}
+            className="text-[0.8125rem] px-4 py-2 rounded-xl border transition-colors duration-200"
+            style={{
+              color: 'var(--color-muted)',
+              borderColor: 'var(--color-glass-stroke)',
+              background: 'transparent',
+            }}
+          >
+            기록 JSON 저장
+          </button>
+        </div>
       </div>
 
       {/* 하단 고정 CTA */}
