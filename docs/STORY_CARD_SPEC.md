@@ -59,7 +59,7 @@
 - 확장 구현 시 `html-to-image`가 cross-origin 이미지를 다룰 수 있도록 dataURL로 변환 후 캔버스에 그린다.
 
 ## 이미지 저장 방식
-- `html-to-image`의 `toPng(node, { pixelRatio: 2, cacheBust: true, fontEmbedCSS })`.
+- `html-to-image`의 `toPng(node, { pixelRatio: 1, cacheBust: true, fontEmbedCSS })`.
 - 폰트는 dataURL 임베드: 첫 카드 생성 직전 `htmlToImage.getFontEmbedCSS()`를 1회 실행 후 메모.
 - 1080×1920 캔버스 노드를 화면에 1:1 크기로 렌더한 뒤 CSS `transform: scale()`로 축소 표시 — 캡처 시에는 원본 크기 사용.
 

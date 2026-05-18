@@ -137,7 +137,7 @@ export interface TierResult {
 
 ## 이미지 생성 구조
 - `components/story-card/StoryCardCanvas.tsx`가 1080×1920 div를 렌더, ref를 외부에 노출.
-- `lib/share.ts`의 `captureToBlob(node)`가 `htmlToImage.toBlob(node, { pixelRatio: 2 })` 수행.
+- `lib/share.ts`의 `captureToBlob(node)`가 1080×1920 캔버스를 원본 크기 그대로 PNG로 캡처한다.
 - 폰트 임베드: 첫 카드 생성 직전에 `htmlToImage.getFontEmbedCSS()`를 1회 실행 후 메모.
 
 ## Web Share API fallback 전략

@@ -13,9 +13,10 @@ const CANVAS_H = 1920
 interface StoryCardCanvasProps {
   templateId: string
   props: CardProps
+  isHighTier?: boolean
 }
 
-export function StoryCardCanvas({ templateId, props }: StoryCardCanvasProps) {
+export function StoryCardCanvas({ templateId, props, isHighTier = false }: StoryCardCanvasProps) {
   const canvasRef = useRef<HTMLDivElement>(null)
   const wrapperRef = useRef<HTMLDivElement>(null)
   const [scale, setScale] = useState(0.31)
@@ -35,7 +36,7 @@ export function StoryCardCanvas({ templateId, props }: StoryCardCanvasProps) {
   const capture = useCallback(async (): Promise<Blob> => {
     if (!canvasRef.current) throw new Error('캔버스 참조 없음')
     const dataUrl = await toPng(canvasRef.current, {
-      pixelRatio: 2,
+      pixelRatio: 1,
       cacheBust: true,
       width: CANVAS_W,
       height: CANVAS_H,
@@ -82,7 +83,7 @@ export function StoryCardCanvas({ templateId, props }: StoryCardCanvasProps) {
       </div>
 
       {/* 공유/저장 버튼 */}
-      <ShareButton capture={capture} fallbackText={fallbackText} />
+      <ShareButton capture={capture} fallbackText={fallbackText} isHighTier={isHighTier} />
     </div>
   )
 }

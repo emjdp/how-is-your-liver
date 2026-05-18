@@ -5,13 +5,16 @@ import { shareOrDownload, shareText } from '@/lib/share'
 import { Toast } from '@/components/ui/Toast'
 
 interface ShareButtonProps {
-  /** 호출 시 PNG Blob을 반환하는 캡처 함수 */
   capture: () => Promise<Blob>
-  /** 캡처 실패 시 텍스트 공유용 폴백 문자열 */
   fallbackText?: string
+  isHighTier?: boolean
 }
 
-export function ShareButton({ capture, fallbackText = '' }: ShareButtonProps) {
+export function ShareButton({
+  capture,
+  fallbackText = '',
+  isHighTier = false,
+}: ShareButtonProps) {
   const [capturing, setCapturing] = useState(false)
   const [toast, setToast] = useState({ show: false, message: '' })
 
@@ -20,7 +23,13 @@ export function ShareButton({ capture, fallbackText = '' }: ShareButtonProps) {
     setCapturing(true)
     try {
       const blob = await capture()
-      await shareOrDownload(blob)
+      const acted = await shareOrDownload(blob)
+      if (acted) {
+        const msg = isHighTier
+          ? '저장 완료.'
+          : '저장 완료 — 스토리에 올려보세요.'
+        setToast({ show: true, message: msg })
+      }
     } catch {
       if (fallbackText) {
         try {
@@ -33,7 +42,7 @@ export function ShareButton({ capture, fallbackText = '' }: ShareButtonProps) {
     } finally {
       setCapturing(false)
     }
-  }, [capturing, capture, fallbackText])
+  }, [capturing, capture, fallbackText, isHighTier])
 
   return (
     <>

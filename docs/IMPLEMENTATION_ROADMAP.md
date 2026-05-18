@@ -44,7 +44,7 @@
 - `app/result/card/page.tsx` (당일만). 주간 카드 라우트는 만들지 않는다 (추후 확장).
 - `lib/share.ts`의 `shareOrDownload` 동작 확인.
 - 높은 티어(t5/t6) 시각 절제 규칙 적용 ([DESIGN_SYSTEM](./DESIGN_SYSTEM.md)).
-- **완료 기준**: iOS Safari 16+ 실기기에서 공유 시트 또는 다운로드 동작 확인. 2종 템플릿 모두 캡처 성공. 캡처된 PNG가 1080×1920 with pixelRatio 2.
+- **완료 기준**: iOS Safari 16+ 실기기에서 공유 시트 또는 다운로드 동작 확인. 2종 템플릿 모두 캡처 성공. 캡처된 PNG가 1080×1920.
 
 ## 8단계 — 테스트/수정
 - 문구 금지어 자동 검사 통과 유지.

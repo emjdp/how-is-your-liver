@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { getRecord } from '@/lib/storage'
 import { computeDay } from '@/lib/calculate'
-import { getDayTier } from '@/lib/tiers'
+import { getDayTier, isHighTier } from '@/lib/tiers'
 import { buildCardProps, CARD_TEMPLATES } from '@/data/cardTemplates'
 import { safetyLineCard } from '@/lib/safety-copy'
 import { StoryCardCanvas } from './StoryCardCanvas'
@@ -139,7 +139,11 @@ export function StoryCardClient({ date }: { date: string }) {
         </div>
 
         {/* 카드 미리보기 + 공유 버튼 */}
-        <StoryCardCanvas templateId={template.id} props={props} />
+        <StoryCardCanvas
+          templateId={template.id}
+          props={props}
+          isHighTier={isHighTier(cardData.tier.id)}
+        />
       </div>
     </div>
   )

@@ -14,11 +14,14 @@ function triggerDownload(blob: Blob, filename: string): void {
   URL.revokeObjectURL(url);
 }
 
-/** 카드 blob → 공유 시트 또는 다운로드 */
+/**
+ * 카드 blob → 공유 시트 또는 다운로드
+ * @returns true = 공유/다운로드 실행됨, false = 사용자 취소 (AbortError)
+ */
 export async function shareOrDownload(
   blob: Blob,
   filename = "liver-report.png"
-): Promise<void> {
+): Promise<boolean> {
   const file = new File([blob], filename, { type: "image/png" });
 
   if (
@@ -30,16 +33,18 @@ export async function shareOrDownload(
         files: [file],
         title: "당신의 간은 안녕하십니까?",
       });
-      return;
+      return true;
     } catch (err) {
-      // 사용자 취소(AbortError)나 Share 실패 시 다운로드로 폴백
+      // 사용자 취소(AbortError) — 다운로드 불필요, false 반환
       if (err instanceof Error && err.name === "AbortError") {
-        return; // 사용자가 공유 취소 — 다운로드 불필요
+        return false;
       }
+      // 그 외 Share 실패 → 다운로드로 폴백
     }
   }
 
   triggerDownload(blob, filename);
+  return true;
 }
 
 /** 텍스트 전용 공유 (이미지 생성 실패 시 폴백) */
