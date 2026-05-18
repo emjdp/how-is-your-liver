@@ -35,11 +35,20 @@ export function StoryCardCanvas({ templateId, props, isHighTier = false }: Story
 
   const capture = useCallback(async (): Promise<Blob> => {
     if (!canvasRef.current) throw new Error('캔버스 참조 없음')
+    if (typeof document !== 'undefined' && document.fonts?.ready) {
+      await document.fonts.ready
+    }
     const dataUrl = await toPng(canvasRef.current, {
       pixelRatio: 1,
       cacheBust: true,
       width: CANVAS_W,
       height: CANVAS_H,
+      style: {
+        transform: 'none',
+        transformOrigin: 'top left',
+        width: `${CANVAS_W}px`,
+        height: `${CANVAS_H}px`,
+      },
     })
     const res = await fetch(dataUrl)
     if (!res.ok) throw new Error('dataUrl fetch 실패')
