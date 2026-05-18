@@ -13,6 +13,7 @@ import { WeekSelector } from '@/components/week-selector/WeekSelector'
 import { DrinkInputCard } from '@/components/drink-input/DrinkInputCard'
 import { Button } from '@/components/ui/Button'
 import { Toast } from '@/components/ui/Toast'
+import { Mascot } from '@/components/ui/Mascot'
 import { PENDING_TOAST_KEY } from '@/components/result/ResultClient'
 import type { DayRecord } from '@/types/record'
 
@@ -179,12 +180,15 @@ export default function Home() {
       <div className="flex-1 px-5 pt-2 pb-44 flex flex-col gap-5">
         {/* 앱 헤더 */}
         <div className="pt-2">
-          <h1
-            className="text-[1.375rem] font-bold leading-snug"
-            style={{ color: 'var(--color-deep-green)' }}
-          >
-            당신의 간은 안녕하십니까?
-          </h1>
+          <div className="flex items-center gap-3">
+            <h1
+              className="flex-1 min-w-0 text-[1.375rem] font-bold leading-snug"
+              style={{ color: 'var(--color-deep-green)' }}
+            >
+              당신의 간은 안녕하십니까?
+            </h1>
+            <Mascot size={48} alt="" className="flex-shrink-0" />
+          </div>
           <p className="text-[0.75rem] mt-1" style={{ color: 'var(--color-muted)' }}>
             소주·맥주 음주량을 기록하고, 오늘의 간 상태를 확인하세요.
           </p>
