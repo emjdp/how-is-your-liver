@@ -91,3 +91,58 @@ describe("안전 안내 문구 길이 및 allow-list", () => {
     expect(/대리 없이/.test(safetyLineCard)).toBe(false);
   });
 });
+
+// ── v1.0 신규 카드 템플릿 하드코딩 카피 금지어 검사 ──────────────────────
+// (TplForecast / TplWarning / TplWeekly 인라인 텍스트)
+
+const FORECAST_STATIC_COPIES = [
+  "숙취 예보",
+  "당신의 간은 안녕하십니까?",
+  "알코올 처리 추정",
+  "순수 알코올",
+  "소주 환산",
+  "열량",
+  "오늘 간은 평화롭습니다.",
+  "내일 컨디션은 비공개입니다.",
+  "가벼운 안개 예상.",
+  "오전 흐림 예상.",
+  "장기간 흐림 예상.",
+];
+
+const WARNING_STATIC_COPIES = [
+  "당신의 간은 안녕하십니까?",
+  "오늘 섭취한 순수 알코올",
+  "소주 환산",
+  "처리 추정",
+  "열량",
+];
+
+const WEEKLY_STATIC_COPIES = [
+  "주간 정산",
+  "당신의 간은 안녕하십니까?",
+  "최근 7일 합산 순수 알코올",
+  "음주일",
+  "소주 환산",
+  "최고 음주일",
+  "평가",
+];
+
+describe("금지어 검사 — v1.0 신규 카드 템플릿 하드코딩 카피", () => {
+  for (const copy of FORECAST_STATIC_COPIES) {
+    it(`TplForecast: "${copy}" 금지어 없음`, () => {
+      checkForbidden(copy, `TplForecast`);
+    });
+  }
+
+  for (const copy of WARNING_STATIC_COPIES) {
+    it(`TplWarning: "${copy}" 금지어 없음`, () => {
+      checkForbidden(copy, `TplWarning`);
+    });
+  }
+
+  for (const copy of WEEKLY_STATIC_COPIES) {
+    it(`TplWeekly: "${copy}" 금지어 없음`, () => {
+      checkForbidden(copy, `TplWeekly`);
+    });
+  }
+});

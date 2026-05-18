@@ -169,29 +169,29 @@
 
 ---
 
-### Step 4 — 카드 템플릿 3종 추가
+### Step 4 — 카드 템플릿 3종 추가 (완료)
 
 **목적**: 당일 카드 4종 + 주간 카드 1종 구조를 만든다.
 
-- [ ] `data/cardTemplates.ts`
+- [x] `data/cardTemplates.ts`
   - `scope: "day" | "week"` 추가.
   - day 템플릿: `tpl_report`, `tpl_overtime`, `tpl_forecast`, `tpl_warning`.
   - week 템플릿: `tpl_weekly`.
   - `getDayTemplates()`, `getWeekTemplates()` 추가.
   - `DayCardProps`, `WeekCardProps` 분리.
   - `buildWeekCardProps` 추가.
-- [ ] `components/story-card/templates/TplForecast.tsx` 신규.
-- [ ] `components/story-card/templates/TplWarning.tsx` 신규.
-- [ ] `components/story-card/templates/TplWeekly.tsx` 신규.
-- [ ] `components/story-card/StoryCardCanvas.tsx`
+- [x] `components/story-card/templates/TplForecast.tsx` 신규.
+- [x] `components/story-card/templates/TplWarning.tsx` 신규.
+- [x] `components/story-card/templates/TplWeekly.tsx` 신규.
+- [x] `components/story-card/StoryCardCanvas.tsx`
   - template switch에 3종 추가.
-- [ ] `components/story-card/StoryCardClient.tsx`
+- [x] `components/story-card/StoryCardClient.tsx`
   - day 템플릿만 필터링.
   - 4개 탭이 360px에서 깨지지 않게 가로 스크롤 또는 2행 그리드 적용.
-- [ ] `tests/card-data.test.ts`
+- [x] `tests/card-data.test.ts`
   - day 4종 + week 1종 존재 확인.
   - `buildWeekCardProps`가 빈 주에도 throw하지 않음.
-- [ ] 실제 PNG 생성 검증.
+- [x] 실제 PNG 생성 검증.
 
 **완료 기준**
 

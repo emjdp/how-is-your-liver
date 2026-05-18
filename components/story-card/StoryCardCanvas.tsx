@@ -4,16 +4,23 @@ import { useRef, useEffect, useState, useCallback } from 'react'
 import { toPng } from 'html-to-image'
 import { TplReport } from './templates/TplReport'
 import { TplOvertime } from './templates/TplOvertime'
+import { TplForecast } from './templates/TplForecast'
+import { TplWarning } from './templates/TplWarning'
+import { TplWeekly } from './templates/TplWeekly'
 import { ShareButton } from './ShareButton'
-import type { CardProps } from '@/data/cardTemplates'
+import type { DayCardProps, WeekCardProps } from '@/data/cardTemplates'
 
 const CANVAS_W = 1080
 const CANVAS_H = 1920
 
 interface StoryCardCanvasProps {
   templateId: string
-  props: CardProps
+  props: DayCardProps | WeekCardProps
   isHighTier?: boolean
+}
+
+function isDayProps(props: DayCardProps | WeekCardProps): props is DayCardProps {
+  return 'date' in props
 }
 
 export function StoryCardCanvas({ templateId, props, isHighTier = false }: StoryCardCanvasProps) {
@@ -55,9 +62,33 @@ export function StoryCardCanvas({ templateId, props, isHighTier = false }: Story
     return res.blob()
   }, [])
 
-  const Template = templateId === 'tpl_report' ? TplReport : TplOvertime
+  function renderTemplate() {
+    if (templateId === 'tpl_weekly') {
+      if (!isDayProps(props)) {
+        return <TplWeekly props={props as WeekCardProps} />
+      }
+      return null
+    }
+    // day 템플릿은 모두 DayCardProps 사용
+    const dayProps = isDayProps(props) ? props : null
+    if (!dayProps) return null
+    switch (templateId) {
+      case 'tpl_report':
+        return <TplReport props={dayProps} />
+      case 'tpl_overtime':
+        return <TplOvertime props={dayProps} />
+      case 'tpl_forecast':
+        return <TplForecast props={dayProps} />
+      case 'tpl_warning':
+        return <TplWarning props={dayProps} />
+      default:
+        return <TplReport props={dayProps} />
+    }
+  }
 
-  const fallbackText = `당신의 간은 안녕하십니까? ${props.cardLine} — 알코올 ${props.alcoholG.toFixed(0)}g`
+  const fallbackText = isDayProps(props)
+    ? `당신의 간은 안녕하십니까? ${props.cardLine} — 알코올 ${props.alcoholG.toFixed(0)}g`
+    : `당신의 간은 안녕하십니까? ${props.cardLine} — 7일 알코올 ${props.totalAlcoholG.toFixed(0)}g`
 
   return (
     <div className="flex flex-col items-center gap-4 w-full">
@@ -87,7 +118,7 @@ export function StoryCardCanvas({ templateId, props, isHighTier = false }: Story
             left: 0,
           }}
         >
-          <Template props={props} />
+          {renderTemplate()}
         </div>
       </div>
 

@@ -5,13 +5,16 @@ import { useRouter } from 'next/navigation'
 import { getRecord } from '@/lib/storage'
 import { computeDay } from '@/lib/calculate'
 import { getDayTier, isHighTier } from '@/lib/tiers'
-import { buildCardProps, CARD_TEMPLATES } from '@/data/cardTemplates'
+import { buildCardProps, getDayTemplates } from '@/data/cardTemplates'
 import { safetyLineCard } from '@/lib/safety-copy'
 import { StoryCardCanvas } from './StoryCardCanvas'
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
 import type { DayRecord, DayCalc, TierResult } from '@/types/record'
 
 const PENDING_TOAST_KEY = 'hiyl:pending_toast'
+
+/* 당일 카드 템플릿 (scope === "day" 4종, tpl_weekly 절대 노출 안 함) */
+const DAY_TEMPLATES = getDayTemplates()
 
 export function StoryCardClient({ date }: { date: string }) {
   const router = useRouter()
@@ -60,7 +63,7 @@ export function StoryCardClient({ date }: { date: string }) {
     )
   }
 
-  const template = CARD_TEMPLATES[templateIdx]
+  const template = DAY_TEMPLATES[templateIdx]
   const rawProps = buildCardProps(
     template.id,
     cardData.record,
@@ -107,38 +110,57 @@ export function StoryCardClient({ date }: { date: string }) {
           <ThemeToggle />
         </div>
 
-        {/* 템플릿 선택 탭 */}
-        <div className="flex gap-2 w-full">
-          {CARD_TEMPLATES.map((t, i) => (
-            <button
-              key={t.id}
-              type="button"
-              onClick={() => setTemplateIdx(i)}
-              style={{
-                flex: 1,
-                height: '44px',
-                borderRadius: '12px',
-                background:
-                  templateIdx === i
-                    ? 'var(--color-deep-green)'
-                    : 'transparent',
-                color:
-                  templateIdx === i
-                    ? 'var(--color-lime)'
-                    : 'var(--color-ink)',
-                border:
-                  templateIdx === i
-                    ? 'none'
-                    : '1px solid var(--color-glass-stroke)',
-                fontSize: '0.8125rem',
-                fontWeight: 600,
-                cursor: 'pointer',
-                transition: 'all 200ms',
-              }}
-            >
-              {t.name}
-            </button>
-          ))}
+        {/* 템플릿 선택 탭 — 가로 스크롤로 360px 대응 */}
+        <div
+          style={{
+            width: '100%',
+            overflowX: 'auto',
+            WebkitOverflowScrolling: 'touch',
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none',
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              gap: '8px',
+              minWidth: 'max-content',
+              paddingBottom: '2px',
+            }}
+          >
+            {DAY_TEMPLATES.map((t, i) => (
+              <button
+                key={t.id}
+                type="button"
+                onClick={() => setTemplateIdx(i)}
+                style={{
+                  height: '44px',
+                  padding: '0 18px',
+                  borderRadius: '12px',
+                  background:
+                    templateIdx === i
+                      ? 'var(--color-deep-green)'
+                      : 'transparent',
+                  color:
+                    templateIdx === i
+                      ? 'var(--color-lime)'
+                      : 'var(--color-ink)',
+                  border:
+                    templateIdx === i
+                      ? 'none'
+                      : '1px solid var(--color-glass-stroke)',
+                  fontSize: '0.8125rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  transition: 'all 200ms',
+                  whiteSpace: 'nowrap',
+                  flexShrink: 0,
+                }}
+              >
+                {t.name}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* 카드 미리보기 + 공유 버튼 */}
