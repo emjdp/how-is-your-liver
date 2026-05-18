@@ -72,7 +72,8 @@ export function WeeklyClient() {
   }, [router])
 
   const handleCardClick = useCallback(() => {
-    setToast({ show: true, message: '스토리 카드는 곧 제공됩니다.' })
+    // 주간 카드는 MVP 미구현 — Toast로 안내
+    setToast({ show: true, message: '주간 스토리 카드는 준비 중입니다.' })
   }, [])
 
   if (!ready || !weekData) {
@@ -175,8 +176,8 @@ export function WeeklyClient() {
             'linear-gradient(to top, var(--color-bg) 75%, transparent)',
         }}
       >
-        <Button variant="primary" onClick={handleCardClick}>
-          주간 스토리 카드 만들기
+        <Button variant="ghost" disabled onClick={handleCardClick}>
+          주간 스토리 카드 준비 중
         </Button>
         <Button variant="ghost" onClick={handleHomeClick}>
           메인으로 돌아가기
