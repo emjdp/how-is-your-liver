@@ -13,6 +13,7 @@ import { WeekSelector } from '@/components/week-selector/WeekSelector'
 import { DrinkInputCard } from '@/components/drink-input/DrinkInputCard'
 import { Button } from '@/components/ui/Button'
 import { Toast } from '@/components/ui/Toast'
+import { PENDING_TOAST_KEY } from '@/components/result/ResultClient'
 import type { DayRecord } from '@/types/record'
 
 type SaveStatus = 'idle' | 'saving' | 'saved'
@@ -57,6 +58,10 @@ export default function Home() {
     setInit(data)
     setSelectedDate(data.selectedDate)
     setRecords(data.records)
+
+    const pendingMsg = sessionStorage.getItem(PENDING_TOAST_KEY) ?? ''
+    if (pendingMsg) sessionStorage.removeItem(PENDING_TOAST_KEY)
+    setToast({ show: !!pendingMsg, message: pendingMsg })
   }, [])
 
   const today = init?.today ?? ''
