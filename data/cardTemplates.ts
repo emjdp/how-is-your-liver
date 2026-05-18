@@ -121,7 +121,7 @@ function formatPeakDayLabel(
   drinkingDays: number
 ): string {
   if (drinkingDays === 0) return "없음";
-  if (peakDayTie) return "동률";
+  if (peakDayTie) return "여러 날 동률";
   if (!peakDay) return "없음";
   const parts = peakDay.split("-");
   if (parts.length !== 3) return peakDay;

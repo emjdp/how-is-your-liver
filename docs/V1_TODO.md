@@ -209,15 +209,15 @@
 
 **목적**: 주간 리포트의 disabled CTA를 실제 `/weekly/card`로 연결한다.
 
-- [ ] `app/weekly/card/page.tsx` 신규.
-- [ ] `components/story-card/WeeklyCardClient.tsx` 신규 또는 동등한 client wrapper.
-- [ ] `components/result/WeeklyClient.tsx`
+- [x] `app/weekly/card/page.tsx` 신규.
+- [x] `components/story-card/WeeklyCardClient.tsx` 신규 또는 동등한 client wrapper.
+- [x] `components/result/WeeklyClient.tsx`
   - "준비 중" CTA를 활성화.
   - `router.push("/weekly/card")`.
-- [ ] 기록 0건 정책
+- [x] 기록 0건 정책
   - v1.0에서는 진입 허용.
   - `tpl_weekly`가 빈 최근 7일을 깔끔하게 표현.
-- [ ] `tests/weekly.test.ts`
+- [x] `tests/weekly.test.ts`
   - 0건/3건/7건에서 `buildWeekCardProps` 결과 검증.
 - [ ] 실제 PNG 생성 검증.
 

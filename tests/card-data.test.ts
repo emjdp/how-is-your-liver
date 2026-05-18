@@ -167,7 +167,7 @@ describe("buildWeekCardProps — 주간 카드 props", () => {
     expect(props.tierId).toBeTruthy();
   });
 
-  it("동률(peakDayTie) — peakDayLabel: '동률'", () => {
+  it("동률(peakDayTie) — peakDayLabel: '여러 날 동률'", () => {
     // 같은 양으로 3일 → peakDayTie
     const records = [
       makeRecord("2026-05-11", 1, 0),
@@ -184,7 +184,7 @@ describe("buildWeekCardProps — 주간 카드 props", () => {
       tier
     );
     if (weekCalc.peakDayTie) {
-      expect(props.peakDayLabel).toBe("동률");
+      expect(props.peakDayLabel).toBe("여러 날 동률");
     }
   });
 });

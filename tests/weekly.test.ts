@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { computeWeek } from "@/lib/calculate";
 import { getWeekTier } from "@/lib/tiers";
+import { buildWeekCardProps, getWeekTemplates } from "@/data/cardTemplates";
 import type { DayRecord } from "@/types/record";
 
 function rec(date: string, soju: number, beer: number): DayRecord {
@@ -139,5 +140,92 @@ describe("computeWeek — 7건 시나리오", () => {
     const r = computeWeek(records);
     expect(r.peakDay).toBe("2026-05-18");
     expect(r.peakDayTie).toBe(false);
+  });
+});
+
+// ── buildWeekCardProps 주간 카드 props ────────────────────────
+
+describe("buildWeekCardProps — 주간 카드 props 생성", () => {
+  it("getWeekTemplates()는 tpl_weekly 1개만 반환", () => {
+    const templates = getWeekTemplates();
+    expect(templates.length).toBe(1);
+    expect(templates[0].id).toBe("tpl_weekly");
+  });
+
+  it("기록 0건에서도 정상 props 생성 (throw 없음)", () => {
+    const weekCalc = computeWeek([]);
+    const tier = getWeekTier(weekCalc.totalAlcoholG);
+    expect(() =>
+      buildWeekCardProps("tpl_weekly", "2026-05-12", "2026-05-18", weekCalc, tier)
+    ).not.toThrow();
+  });
+
+  it("기록 0건 — drinkingDays 0, totalAlcoholG 0, peakDayLabel '없음'", () => {
+    const weekCalc = computeWeek([]);
+    const tier = getWeekTier(weekCalc.totalAlcoholG);
+    const props = buildWeekCardProps(
+      "tpl_weekly",
+      "2026-05-12",
+      "2026-05-18",
+      weekCalc,
+      tier,
+    );
+    expect(props.templateId).toBe("tpl_weekly");
+    expect(props.drinkingDays).toBe(0);
+    expect(props.totalAlcoholG).toBe(0);
+    expect(props.peakDayLabel).toBe("없음");
+    expect(props.rangeStart).toBe("2026-05-12");
+    expect(props.rangeEnd).toBe("2026-05-18");
+    expect(props.tierName).toBeTruthy();
+    expect(props.cardLine).toBeTruthy();
+    expect(props.safetyLine).toBeTruthy();
+  });
+
+  it("3건 기록 — drinkingDays/totalAlcoholG/peakDayLabel 정상", () => {
+    const records: DayRecord[] = [
+      rec("2026-05-18", 1, 0), // 소주 1병
+      rec("2026-05-17", 0, 2), // 맥주 2잔
+      rec("2026-05-16", 0, 1), // 맥주 1잔
+    ];
+    const weekCalc = computeWeek(records);
+    const tier = getWeekTier(weekCalc.totalAlcoholG);
+    const props = buildWeekCardProps(
+      "tpl_weekly",
+      "2026-05-12",
+      "2026-05-18",
+      weekCalc,
+      tier,
+    );
+    expect(props.drinkingDays).toBe(3);
+    expect(props.totalAlcoholG).toBeGreaterThan(0);
+    expect(props.totalSojuEquivBottles).toBeGreaterThan(0);
+    // 18일이 최고 음주일 (소주 1병 ≈ 46.9g > 맥주 2잔 ≈ 35.5g)
+    expect(props.peakDayLabel).not.toBe("없음");
+    expect(props.peakDayLabel).not.toBe("여러 날 동률");
+  });
+
+  it("7건 기록 — totalAlcoholG/totalSojuEquivBottles 합산 정상", () => {
+    const records: DayRecord[] = [
+      rec("2026-05-18", 1, 0),
+      rec("2026-05-17", 0, 2),
+      rec("2026-05-16", 1, 1),
+      rec("2026-05-15", 2, 0),
+      rec("2026-05-14", 0, 3),
+      rec("2026-05-13", 1, 0),
+      rec("2026-05-12", 0, 1),
+    ];
+    const weekCalc = computeWeek(records);
+    const tier = getWeekTier(weekCalc.totalAlcoholG);
+    const props = buildWeekCardProps(
+      "tpl_weekly",
+      "2026-05-12",
+      "2026-05-18",
+      weekCalc,
+      tier,
+    );
+    expect(props.drinkingDays).toBe(7);
+    expect(props.totalAlcoholG).toBeGreaterThan(0);
+    expect(props.totalSojuEquivBottles).toBeGreaterThan(0);
+    expect(props.templateId).toBe("tpl_weekly");
   });
 });
