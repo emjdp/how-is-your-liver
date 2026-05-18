@@ -8,6 +8,16 @@ function rec(date: string, soju: number, beer: number): DayRecord {
   return { date, soju, beer, updatedAt: 0 };
 }
 
+function rec4(
+  date: string,
+  soju: number,
+  beer: number,
+  sojuGlass: number,
+  highball: number
+): DayRecord {
+  return { date, soju, beer, sojuGlass, highball, updatedAt: 0 };
+}
+
 // ── 0건 시나리오 ─────────────────────────────────────────────
 
 describe("computeWeek — 0건 시나리오", () => {
@@ -140,6 +150,59 @@ describe("computeWeek — 7건 시나리오", () => {
     const r = computeWeek(records);
     expect(r.peakDay).toBe("2026-05-18");
     expect(r.peakDayTie).toBe(false);
+  });
+});
+
+// ── 4종 혼합 시나리오 ─────────────────────────────────────────
+
+describe("computeWeek — 4종 혼합 시나리오", () => {
+  it("sojuGlass/highball만 있는 날도 음주일로 집계된다", () => {
+    const records = [
+      rec4("2026-05-18", 0, 0, 2, 0),  // 소주잔 2잔만
+      rec4("2026-05-17", 0, 0, 0, 1),  // 하이볼 1잔만
+      rec4("2026-05-16", 0, 0, 0, 0),  // 0/0/0/0
+    ];
+    const r = computeWeek(records);
+    expect(r.drinkingDays).toBe(2);
+  });
+
+  it("4종 혼합 7일 — totalAlcoholG, drinkingDays, peakDay 정상", () => {
+    // 18일: 소주1병+소주2잔+맥주1잔+하이볼1잔 ≈ 96.97g
+    // 17일: 맥주2잔 ≈ 35.5g
+    // 16일: 하이볼2잔 ≈ 38.66g
+    // 15일: 소주잔3잔 ≈ 19.53g
+    // 14일: 소주1병 ≈ 46.87g
+    // 13일: 0/0/0/0
+    // 12일: 맥주1잔 ≈ 17.75g
+    const records: DayRecord[] = [
+      rec4("2026-05-18", 1, 1, 2, 1),
+      rec4("2026-05-17", 0, 2, 0, 0),
+      rec4("2026-05-16", 0, 0, 0, 2),
+      rec4("2026-05-15", 0, 0, 3, 0),
+      rec4("2026-05-14", 1, 0, 0, 0),
+      rec4("2026-05-13", 0, 0, 0, 0),
+      rec4("2026-05-12", 0, 1, 0, 0),
+    ];
+    const r = computeWeek(records);
+    expect(r.drinkingDays).toBe(6);
+    expect(r.totalAlcoholG).toBeGreaterThan(0);
+    // 18일이 최고 (96.97g)
+    expect(r.peakDay).toBe("2026-05-18");
+    expect(r.peakDayTie).toBe(false);
+  });
+
+  it("4종 혼합 — 합산 알코올 수치가 각 단위 합과 일치한다", () => {
+    // soju 1병 ≈ 46.87 + highball 1잔 ≈ 19.33 = 66.20g
+    const record = rec4("2026-05-18", 1, 0, 0, 1);
+    const r = computeWeek([record]);
+    expect(r.totalAlcoholG).toBeCloseTo(46.87 + 19.33, 0);
+  });
+
+  it("sojuGlass/highball가 없는 기존 기록도 4종 OR 판정에서 누락 없음", () => {
+    // 기존 2필드 기록: soju=1, beer=0
+    const legacy = rec("2026-05-18", 1, 0);
+    const r = computeWeek([legacy]);
+    expect(r.drinkingDays).toBe(1);
   });
 });
 

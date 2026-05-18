@@ -124,4 +124,69 @@ describe("getAllRecords — sanitize 검증", () => {
     expect(payload.version).toBe(1);
     expect(payload.records).toHaveLength(1);
   });
+
+  it("sojuGlass/highball를 저장하면 getAllRecords export에 sanitize된 값이 포함된다", () => {
+    const r: DayRecord = {
+      date: "2026-05-18",
+      soju: 1,
+      beer: 0,
+      sojuGlass: 3,
+      highball: 2,
+      updatedAt: Date.now(),
+    };
+    saveRecord(r);
+    const all = getAllRecords();
+    const found = all.find((x) => x.date === "2026-05-18");
+    expect(found?.sojuGlass).toBe(3);
+    expect(found?.highball).toBe(2);
+  });
+
+  it("sojuGlass/highball 음수 저장 → getAllRecords에서 0으로 클램프", () => {
+    const r: DayRecord = {
+      date: "2026-05-17",
+      soju: 0,
+      beer: 0,
+      sojuGlass: -5,
+      highball: -2,
+      updatedAt: Date.now(),
+    };
+    saveRecord(r);
+    const all = getAllRecords();
+    const found = all.find((x) => x.date === "2026-05-17");
+    expect(found?.sojuGlass).toBe(0);
+    expect(found?.highball).toBe(0);
+  });
+
+  it("sojuGlass/highball 초과 저장 → getAllRecords에서 max(30)으로 클램프", () => {
+    const r: DayRecord = {
+      date: "2026-05-16",
+      soju: 0,
+      beer: 0,
+      sojuGlass: 999,
+      highball: 999,
+      updatedAt: Date.now(),
+    };
+    saveRecord(r);
+    const all = getAllRecords();
+    const found = all.find((x) => x.date === "2026-05-16");
+    expect(found?.sojuGlass).toBe(30);
+    expect(found?.highball).toBe(30);
+  });
+
+  it("4필드 기록을 serializeExport에 넘기면 새 필드도 payload에 포함된다", () => {
+    const r: DayRecord = {
+      date: "2026-05-15",
+      soju: 1,
+      beer: 1,
+      sojuGlass: 2,
+      highball: 1,
+      updatedAt: Date.now(),
+    };
+    saveRecord(r);
+    const all = getAllRecords();
+    const payload = serializeExport(all);
+    const found = payload.records.find((x) => x.date === "2026-05-15");
+    expect(found?.sojuGlass).toBe(2);
+    expect(found?.highball).toBe(1);
+  });
 });

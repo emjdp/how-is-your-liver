@@ -7,7 +7,12 @@ import {
   computeDay,
   clampInput,
 } from "@/lib/calculate";
-import { SOJU_G_PER_BOTTLE, BEER_G_PER_UNIT } from "@/lib/constants";
+import {
+  SOJU_G_PER_BOTTLE,
+  SOJU_GLASS_G_PER_UNIT,
+  BEER_G_PER_UNIT,
+  HIGHBALL_G_PER_UNIT,
+} from "@/lib/constants";
 import type { DayRecord } from "@/types/record";
 
 describe("pureAlcoholG", () => {
@@ -31,6 +36,16 @@ describe("pureAlcoholG", () => {
 
   it("NaN → 0으로 폴백", () => {
     expect(pureAlcoholG(NaN, 0.165)).toBe(0);
+  });
+
+  it("소주 1잔 알코올 g ≈ 6.51", () => {
+    const g = pureAlcoholG(50, 0.165);
+    expect(g).toBeCloseTo(6.51, 1);
+  });
+
+  it("하이볼 1잔 알코올 g ≈ 19.33", () => {
+    const g = pureAlcoholG(350, 0.07);
+    expect(g).toBeCloseTo(19.33, 1);
   });
 });
 
@@ -78,7 +93,7 @@ describe("computeDay", () => {
     expect(calc.alcoholG).toBe(0);
   });
 
-  it("입력 상한 초과 → max로 클램프", () => {
+  it("입력 상한 초과 → max로 클램프 (soju/beer 2종)", () => {
     const record: DayRecord = {
       date: "2026-05-18",
       soju: 999,
@@ -87,8 +102,52 @@ describe("computeDay", () => {
     };
     const calc = computeDay(record);
     // soju 30병 + beer 30잔의 알코올 g
+    const expected = SOJU_G_PER_BOTTLE * 30 + BEER_G_PER_UNIT * 30;
+    expect(calc.alcoholG).toBeCloseTo(expected, 0);
+  });
+
+  it("소주 1병 + 소주 2잔 + 맥주 1잔 + 하이볼 1잔 → 합산 ≈ 96.97g", () => {
+    const record: DayRecord = {
+      date: "2026-05-18",
+      soju: 1,
+      beer: 1,
+      sojuGlass: 2,
+      highball: 1,
+      updatedAt: 0,
+    };
+    const calc = computeDay(record);
+    // 46.87 + 2*6.51 + 17.75 + 19.33 = 96.97g
+    expect(calc.alcoholG).toBeCloseTo(96.97, 0);
+  });
+
+  it("sojuGlass/highball 누락 → 0으로 폴백 (기존 2종 결과 동일)", () => {
+    const withNew: DayRecord = { date: "2026-05-18", soju: 2, beer: 3, updatedAt: 0 };
+    const withExplicit: DayRecord = {
+      date: "2026-05-18",
+      soju: 2,
+      beer: 3,
+      sojuGlass: 0,
+      highball: 0,
+      updatedAt: 0,
+    };
+    expect(computeDay(withNew).alcoholG).toBeCloseTo(computeDay(withExplicit).alcoholG, 5);
+  });
+
+  it("4종 입력 상한 초과 → 각 max(30)으로 클램프", () => {
+    const record: DayRecord = {
+      date: "2026-05-18",
+      soju: 999,
+      beer: 999,
+      sojuGlass: 999,
+      highball: 999,
+      updatedAt: 0,
+    };
+    const calc = computeDay(record);
     const expected =
-      SOJU_G_PER_BOTTLE * 30 + BEER_G_PER_UNIT * 30;
+      SOJU_G_PER_BOTTLE * 30 +
+      SOJU_GLASS_G_PER_UNIT * 30 +
+      BEER_G_PER_UNIT * 30 +
+      HIGHBALL_G_PER_UNIT * 30;
     expect(calc.alcoholG).toBeCloseTo(expected, 0);
   });
 });
@@ -108,17 +167,22 @@ describe("calcProcessHours", () => {
 });
 
 describe("clampInput", () => {
-  it("최대값 초과 → max로 클램프", () => {
+  it("최대값 초과 → max로 클램프 (4종)", () => {
     expect(clampInput(999, "soju")).toBe(30);
     expect(clampInput(999, "beer")).toBe(30);
+    expect(clampInput(999, "sojuGlass")).toBe(30);
+    expect(clampInput(999, "highball")).toBe(30);
   });
 
   it("음수 → 0으로 클램프", () => {
     expect(clampInput(-5, "soju")).toBe(0);
+    expect(clampInput(-1, "sojuGlass")).toBe(0);
+    expect(clampInput(-1, "highball")).toBe(0);
   });
 
   it("소수 → 정수 반올림", () => {
     expect(clampInput(2.7, "soju")).toBe(3);
+    expect(clampInput(1.4, "highball")).toBe(1);
   });
 });
 

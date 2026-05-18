@@ -32,18 +32,19 @@ function writeAll(records: RecordsMap): void {
   }
 }
 
-function sanitizeRecord(r: DayRecord): DayRecord {
+function clamp(n: unknown, max: number): number {
+  const v = typeof n === "number" && !isNaN(n) ? n : 0;
+  return Math.min(Math.max(0, Math.round(v)), max);
+}
+
+function sanitizeRecord(r: Partial<DayRecord>, fallbackDate: string): DayRecord {
   return {
-    date: r.date,
-    soju: Math.min(
-      Math.max(0, Math.round(isNaN(r.soju) ? 0 : r.soju)),
-      INPUT_MAX.soju
-    ),
-    beer: Math.min(
-      Math.max(0, Math.round(isNaN(r.beer) ? 0 : r.beer)),
-      INPUT_MAX.beer
-    ),
-    updatedAt: r.updatedAt ?? Date.now(),
+    date: typeof r.date === "string" ? r.date : fallbackDate,
+    soju:      clamp(r.soju,      INPUT_MAX.soju),
+    beer:      clamp(r.beer,      INPUT_MAX.beer),
+    sojuGlass: clamp(r.sojuGlass, INPUT_MAX.sojuGlass),
+    highball:  clamp(r.highball,  INPUT_MAX.highball),
+    updatedAt: typeof r.updatedAt === "number" ? r.updatedAt : Date.now(),
   };
 }
 
@@ -53,10 +54,10 @@ export function getRecord(date: string): DayRecord | undefined {
   const r = records[date];
   if (!r) return undefined;
   try {
-    return sanitizeRecord(r);
+    return sanitizeRecord(r, date);
   } catch {
     console.warn(`[storage] 날짜 ${date} 기록 손상, 폴백`);
-    return { date, soju: 0, beer: 0, updatedAt: Date.now() };
+    return { date, soju: 0, beer: 0, sojuGlass: 0, highball: 0, updatedAt: Date.now() };
   }
 }
 
@@ -64,7 +65,7 @@ export function getRecord(date: string): DayRecord | undefined {
 export function saveRecord(record: DayRecord): void {
   if (isSSR()) return;
   const records = readAll();
-  records[record.date] = sanitizeRecord({ ...record, updatedAt: Date.now() });
+  records[record.date] = sanitizeRecord({ ...record, updatedAt: Date.now() }, record.date);
   writeAll(records);
 }
 
@@ -79,9 +80,9 @@ export function getRecordsForDates(dateStrings: string[]): RecordsMap {
     const r = records[d];
     if (r) {
       try {
-        result[d] = sanitizeRecord(r);
+        result[d] = sanitizeRecord(r, d);
       } catch {
-        result[d] = { date: d, soju: 0, beer: 0, updatedAt: Date.now() };
+        result[d] = { date: d, soju: 0, beer: 0, sojuGlass: 0, highball: 0, updatedAt: Date.now() };
       }
     }
   }
@@ -94,9 +95,9 @@ export function getAllRecords(): DayRecord[] {
   const result: DayRecord[] = [];
   for (const [date, r] of Object.entries(records)) {
     try {
-      result.push(sanitizeRecord(r));
+      result.push(sanitizeRecord(r, date));
     } catch {
-      result.push({ date, soju: 0, beer: 0, updatedAt: Date.now() });
+      result.push({ date, soju: 0, beer: 0, sojuGlass: 0, highball: 0, updatedAt: Date.now() });
     }
   }
   return result.sort((a, b) => a.date.localeCompare(b.date));

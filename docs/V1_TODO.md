@@ -265,21 +265,21 @@
 
 **목적**: 소주 잔과 하이볼을 UI보다 먼저 계산 모델에 추가한다.
 
-- [ ] `types/record.ts`
+- [x] `types/record.ts`
   - `DrinkType = "soju" | "beer" | "sojuGlass" | "highball"`.
   - `DayRecord`에 `sojuGlass?: number`, `highball?: number`.
-- [ ] `lib/constants.ts`
+- [x] `lib/constants.ts`
   - `DRINKS.sojuGlass = { mlPerUnit: 50, abv: 0.165, unitLabel: "잔" }`.
   - `DRINKS.highball = { mlPerUnit: 350, abv: 0.07, unitLabel: "잔" }`.
   - `INPUT_MAX.sojuGlass = 30`, `INPUT_MAX.highball = 30`.
-- [ ] `lib/calculate.ts`
+- [x] `lib/calculate.ts`
   - `computeDay` 4종 합산.
   - 누락 필드 0 폴백.
   - `computeWeek` 음주일 판정 4종 OR.
-- [ ] `lib/storage.ts`
+- [x] `lib/storage.ts`
   - `sanitizeRecord` 4필드 처리.
   - 기존 저장 데이터는 새 필드 0으로 읽힘.
-- [ ] 테스트
+- [x] 테스트
   - 소주 1잔 ≈ 6.51g.
   - 하이볼 1잔 ≈ 19.33g.
   - 소주 1병 + 소주 2잔 + 맥주 1잔 + 하이볼 1잔 합산.

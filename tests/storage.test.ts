@@ -1,7 +1,8 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { getRecord, saveRecord, getRecordsForDates } from "@/lib/storage";
+import { getRecord, saveRecord, getRecordsForDates, getAllRecords } from "@/lib/storage";
 import { getLast7Days } from "@/lib/date";
 import type { DayRecord } from "@/types/record";
+import { STORAGE_KEY } from "@/lib/constants";
 
 // jsdom에서 localStorage를 사용
 beforeEach(() => {
@@ -122,5 +123,97 @@ describe("SSR 가드", () => {
     // storage.ts의 isSSR()이 typeof window === "undefined" 체크를 하므로
     // 이 테스트는 실행 환경(브라우저)에서 정상 동작 여부를 검증
     expect(() => getRecord("2026-05-18")).not.toThrow();
+  });
+});
+
+// ── 하위 호환: sojuGlass/highball 없는 기존 데이터 ────────────────
+
+describe("하위 호환 — 기존 2필드 기록 읽기", () => {
+  it("sojuGlass/highball 없는 기존 기록을 읽으면 해당 필드가 0으로 반환된다", () => {
+    // 구버전 저장 데이터 직접 주입 (sojuGlass/highball 없음)
+    const legacyData: Record<string, unknown> = {
+      "2026-01-01": { date: "2026-01-01", soju: 2, beer: 1, updatedAt: 1000 },
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(legacyData));
+
+    const r = getRecord("2026-01-01");
+    expect(r).toBeDefined();
+    expect(r?.soju).toBe(2);
+    expect(r?.beer).toBe(1);
+    expect(r?.sojuGlass).toBe(0);
+    expect(r?.highball).toBe(0);
+  });
+
+  it("기존 2필드 기록이 getAllRecords에서도 sojuGlass/highball 0으로 포함된다", () => {
+    const legacyData: Record<string, unknown> = {
+      "2026-01-10": { date: "2026-01-10", soju: 1, beer: 0, updatedAt: 2000 },
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(legacyData));
+
+    const all = getAllRecords();
+    expect(all).toHaveLength(1);
+    expect(all[0].sojuGlass).toBe(0);
+    expect(all[0].highball).toBe(0);
+  });
+
+  it("date 필드가 빠진 손상 기록은 저장 key 날짜로 폴백된다", () => {
+    const legacyData: Record<string, unknown> = {
+      "2026-01-11": { soju: 1, beer: 0, updatedAt: 3000 },
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(legacyData));
+
+    const r = getRecord("2026-01-11");
+    expect(r?.date).toBe("2026-01-11");
+    expect(r?.sojuGlass).toBe(0);
+    expect(r?.highball).toBe(0);
+  });
+});
+
+// ── 4필드 저장/읽기 ────────────────────────────────────────────────
+
+describe("4필드 저장/읽기", () => {
+  it("sojuGlass/highball를 포함한 기록 저장 후 읽으면 동일 값이 반환된다", () => {
+    const r: DayRecord = {
+      date: "2026-05-18",
+      soju: 1,
+      beer: 1,
+      sojuGlass: 3,
+      highball: 2,
+      updatedAt: Date.now(),
+    };
+    saveRecord(r);
+    const result = getRecord("2026-05-18");
+    expect(result?.sojuGlass).toBe(3);
+    expect(result?.highball).toBe(2);
+  });
+
+  it("sojuGlass 음수 저장 → 0으로 클램프", () => {
+    const r: DayRecord = {
+      date: "2026-05-18",
+      soju: 0,
+      beer: 0,
+      sojuGlass: -5,
+      highball: -2,
+      updatedAt: Date.now(),
+    };
+    saveRecord(r);
+    const result = getRecord("2026-05-18");
+    expect(result?.sojuGlass).toBe(0);
+    expect(result?.highball).toBe(0);
+  });
+
+  it("sojuGlass/highball 초과 저장 → max(30)으로 클램프", () => {
+    const r: DayRecord = {
+      date: "2026-05-18",
+      soju: 0,
+      beer: 0,
+      sojuGlass: 999,
+      highball: 500,
+      updatedAt: Date.now(),
+    };
+    saveRecord(r);
+    const result = getRecord("2026-05-18");
+    expect(result?.sojuGlass).toBe(30);
+    expect(result?.highball).toBe(30);
   });
 });

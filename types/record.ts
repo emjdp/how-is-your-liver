@@ -1,11 +1,13 @@
-export type DrinkType = "soju" | "beer";
+export type DrinkType = "soju" | "beer" | "sojuGlass" | "highball";
 
 export interface DayRecord {
   /** ISO date string, KST 자정 기준 YYYY-MM-DD */
   date: string;
-  soju: number; // 병 수, integer, 0..30
-  beer: number; // 잔 수, integer, 0..30
-  updatedAt: number; // epoch ms
+  soju: number;        // 병 수, integer, 0..30
+  beer: number;        // 잔 수, integer, 0..30
+  sojuGlass?: number;  // 소주 잔 수, integer, 0..30. 없으면 0으로 폴백
+  highball?: number;   // 하이볼 잔 수, integer, 0..30. 없으면 0으로 폴백
+  updatedAt: number;   // epoch ms
 }
 
 export interface DayCalc {

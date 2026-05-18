@@ -48,20 +48,18 @@ export function clampInput(
   return Math.min(v, INPUT_MAX[type]);
 }
 
-/** DayRecord → DayCalc */
+/** DayRecord → DayCalc (4종 합산: soju, sojuGlass, beer, highball) */
 export function computeDay(record: DayRecord): DayCalc {
-  const soju = clampInput(record.soju, "soju");
-  const beer = clampInput(record.beer, "beer");
+  const soju      = clampInput(record.soju, "soju");
+  const sojuGlass = clampInput(record.sojuGlass ?? 0, "sojuGlass");
+  const beer      = clampInput(record.beer, "beer");
+  const highball  = clampInput(record.highball ?? 0, "highball");
 
-  const sojuG = pureAlcoholG(
-    DRINKS.soju.mlPerUnit * soju,
-    DRINKS.soju.abv
-  );
-  const beerG = pureAlcoholG(
-    DRINKS.beer.mlPerUnit * beer,
-    DRINKS.beer.abv
-  );
-  const totalG = sojuG + beerG;
+  const sojuG      = pureAlcoholG(DRINKS.soju.mlPerUnit      * soju,      DRINKS.soju.abv);
+  const sojuGlassG = pureAlcoholG(DRINKS.sojuGlass.mlPerUnit * sojuGlass, DRINKS.sojuGlass.abv);
+  const beerG      = pureAlcoholG(DRINKS.beer.mlPerUnit      * beer,      DRINKS.beer.abv);
+  const highballG  = pureAlcoholG(DRINKS.highball.mlPerUnit  * highball,  DRINKS.highball.abv);
+  const totalG = sojuG + sojuGlassG + beerG + highballG;
 
   return {
     alcoholG: Math.round(totalG * 10) / 10,
@@ -85,7 +83,14 @@ export function computeWeek(records: DayRecord[]): WeekCalc {
   for (const r of sorted) {
     const calc = computeDay(r);
     totalG += calc.alcoholG;
-    if (r.soju > 0 || r.beer > 0) drinkingDays++;
+    if (
+      r.soju > 0 ||
+      r.beer > 0 ||
+      (r.sojuGlass ?? 0) > 0 ||
+      (r.highball ?? 0) > 0
+    ) {
+      drinkingDays++;
+    }
 
     if (calc.alcoholG > peakG) {
       peakG = calc.alcoholG;
