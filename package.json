@@ -8,7 +8,13 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run --passWithNoTests",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "vercel:login": "npx vercel login",
+    "vercel:whoami": "npx vercel whoami",
+    "vercel:link": "npx vercel link",
+    "vercel:pull": "npx vercel pull",
+    "deploy:preview": "npx vercel",
+    "deploy:prod": "npx vercel --prod"
   },
   "dependencies": {
     "date-fns": "^4.1.0",
