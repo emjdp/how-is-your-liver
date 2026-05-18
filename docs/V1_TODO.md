@@ -386,14 +386,60 @@
 
 ## 4. 마지막 품질 게이트
 
-- [ ] `npm test` 모두 통과.
-- [ ] `npm run lint` 경고 없음.
-- [ ] `npm run build` 성공.
-- [ ] 금지어 테스트에 새 카드/토스트 카피 포함.
+- [x] `npm test` 모두 통과.
+- [x] `npm run lint` 경고 없음.
+- [x] `npm run build` 성공.
+- [x] 금지어 테스트에 새 카드/토스트 카피 포함.
 - [ ] 360/375/414px 메인/결과/주간/카드 시각 확인.
 - [ ] 당일 카드 4종 + 주간 카드 1종 PNG 1080×1920.
 - [ ] 사진 배경 카드 PNG 1080×1920.
 - [ ] Vercel preview 또는 자동 배포 확인.
+
+### 2026-05-18 최종 QA 인계
+
+**정적 게이트**
+
+- `npm test`: 통과. 9 files, 242 tests.
+- `npm run lint`: 통과. 경고 0건.
+- `npm run build`: 통과. 6 라우트 빌드 확인 (`/`, `/result`, `/result/card`, `/weekly`, `/weekly/card`, `/_not-found`).
+- 금지어 테스트: 통과. day/week 티어 메시지와 Forecast/Warning/Weekly 카드 하드코딩 카피 포함.
+
+**코드 인스펙션 결과**
+
+- 메인 4종 스테퍼: `StepperRow`의 `flex-1 min-w-0 truncate` + 스테퍼 `shrink-0` 구조로 작은 폭에서 라벨만 줄어드는 구조.
+- 하단 CTA: `app/page.tsx`의 `pb-44`로 fixed CTA 영역 확보.
+- 결과 입력 내역: 4종 모두 표시, 0인 항목은 흐리게 표시.
+- 주간 페이지: `pb-60`으로 하단 버튼 영역 확보, JSON export는 본문 안에 위치.
+- 카드 템플릿 탭: 가로 스크롤과 `minWidth: max-content` 적용.
+- 사진 배경: `tpl_report`, `tpl_overtime`만 지원. 제거 시 기존 그라데이션 복원.
+- 카드 캡처: `StoryCardCanvas`가 1080×1920 원본 크기와 `transform: none` 캡처 옵션을 사용.
+
+**남은 수동 확인**
+
+- 브라우저 자동 검증은 VSCode 종료 이슈가 재현되어 중단. 브라우저 검증은 사용자 환경에서 직접 수행한다.
+- 360/375/414px에서 메인, 결과, 주간, 카드 화면 겹침/잘림 확인.
+- 당일 카드 4종, 주간 카드 1종, 사진 배경 카드 PNG를 다운로드하고 실제 1080×1920인지 확인.
+- Vercel preview 또는 production 배포 상태 확인.
+
+**다음 최종 프롬프트 초안**
+
+```text
+v1.0 최종 브라우저 QA 결과를 반영해 마무리해줘.
+
+내가 확인한 항목:
+- 360/375/414px 메인/결과/주간/카드 시각 확인: [pass/fail 및 메모]
+- 당일 카드 4종 PNG 1080×1920: [pass/fail 및 메모]
+- 주간 카드 PNG 1080×1920: [pass/fail 및 메모]
+- 사진 배경 카드 PNG 1080×1920: [pass/fail 및 메모]
+- Vercel preview/prod 접속: [pass/fail 및 URL]
+
+요청:
+1. fail 항목이 있으면 코드 수정.
+2. 수정 후 npm test, npm run lint, npm run build 실행.
+3. docs/V1_TODO.md 마지막 품질 게이트 체크박스 갱신.
+4. 변경사항 커밋하고 main에 push.
+5. v1.0 릴리즈 가능 여부를 짧게 판정해줘.
+```
 
 ## 5. 권장 커밋 순서
 
