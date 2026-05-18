@@ -1,26 +1,66 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* ── 컬러 팔레트 ─────────────────────────────────── */
+  --color-ink: #0b1411;
+  --color-bg: #f7f4ec;
+  --color-surface: #ffffff;
+  --color-deep-green: #0f3d2e;
+  --color-deep-green-2: #1a5c44;
+  --color-lime: #c8f26c;
+  --color-warn: #d9342b;
+  --color-muted: #6b7370;
+  --color-glass: rgba(255, 255, 255, 0.55);
+  --color-glass-stroke: rgba(15, 61, 46, 0.12);
+
+  /* ── 타이포그래피 ────────────────────────────────── */
+  --font-pretendard: "Pretendard Variable", "Pretendard", sans-serif;
+  --font-inter: var(--font-inter-var), "Inter Variable", sans-serif;
+
+  /* ── 타입 스케일 (모바일) ─────────────────────────── */
+  --text-display: 3.5rem; /* 56px */
+  --text-h1: 2rem; /* 32px */
+  --text-h2: 1.375rem; /* 22px */
+  --text-body: 0.9375rem; /* 15px */
+  --text-caption: 0.75rem; /* 12px */
 }
 
+/* ── 기본 테마 변수 ────────────────────────────────────── */
+:root {
+  --bg: var(--color-bg);
+  --fg: var(--color-ink);
+}
+
+/* ── 다크 모드 (자동 대응, 토글 UI 없음) ────────────────── */
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --color-bg: #111a17;
+    --color-surface: #1c2622;
+    --color-ink: #edecea;
+    --color-muted: #8fa89e;
+    --color-glass: rgba(28, 38, 34, 0.7);
+    --color-glass-stroke: rgba(200, 242, 108, 0.1);
   }
 }
 
+/* ── 기본 바디 스타일 ────────────────────────────────────── */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-bg);
+  color: var(--color-ink);
+  font-family: "Pretendard Variable", "Pretendard", var(--font-inter), sans-serif;
+  letter-spacing: -0.025em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── 접근성: 모션 감소 ───────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0ms !important;
+    scroll-behavior: auto !important;
+  }
 }
