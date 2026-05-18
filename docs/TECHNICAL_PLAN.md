@@ -105,7 +105,7 @@ export interface DayCalc {
   alcoholG: number;
   sojuEquivBottles: number;
   kcal: number;
-  recoveryHours: number;
+  processHours: number;
 }
 
 export interface TierResult {
@@ -128,7 +128,7 @@ export interface TierResult {
 ## 계산/티어/문구 유틸 구조
 - `lib/calculate.ts`: 순수 함수만. React 의존 X. Vitest로 단위 테스트.
   - 주요 함수: `pureAlcoholG(volumeMl, abv)`, `computeDay(record): DayCalc`, `computeWeek(records[]): WeekCalc`.
-  - **명칭 주의**: 결과 필드는 내부적으로 `processHours`(또는 그대로 `recoveryHours`도 무방하나 외부 노출 라벨은 "처리 추정 시간"). 본 문서 단일 진실원은 [CALCULATION_RULES](./CALCULATION_RULES.md).
+  - **명칭 주의**: 결과 필드는 `processHours`로 통일한다. 외부 노출 라벨은 "처리 추정 시간". 본 문서 단일 진실원은 [CALCULATION_RULES](./CALCULATION_RULES.md).
 - `lib/tiers.ts`: `getDayTier(alcoholG): TierResult`, `getWeekTier(totalG): TierResult`. 카피는 `data/tierMessages.ts`에서 lookup. 경계 조건은 `<= / >` 기반 ([TIER_SYSTEM](./TIER_SYSTEM.md) 참조).
 - `lib/safety-copy.ts`: `safetyLineLong`(페이지용 ≤80자) + `safetyLineCard`(카드용 ≤32자) 2개 export.
 - **금지어 검사**(`tests/safety-copy.test.ts`):
@@ -177,7 +177,8 @@ export interface TierResult {
 **`tests/safety-copy.test.ts`**
 - 모든 `tierMessages` 슬롯 카피가 금지어 사전과 매칭되지 않음.
 - 모든 `cardLine` 길이 ≤18자.
-- 안전 안내 문구 길이 ≤80자.
+- 페이지용 안전 안내(`safetyLineLong`) 길이 ≤80자.
+- 카드용 안전 안내(`safetyLineCard`) 길이 ≤32자.
 
 **`tests/card-data.test.ts`**
 - 결과 데이터 → 카드 prop 변환 함수가 MVP 2종 템플릿(`tpl_report`, `tpl_overtime`)에 필요한 필드를 제공.
@@ -188,7 +189,7 @@ export interface TierResult {
 1. **세팅**: 의존성 추가 (`framer-motion`, `date-fns`, `html-to-image`, `vitest`, `@testing-library/react`, `jsdom`). `vitest.config.ts`. `tsconfig` paths 확인.
 2. **디자인 토큰**: `app/globals.css`에 `@theme inline` 컬러/폰트 토큰. Pretendard/Inter 셀프 호스팅 또는 `next/font` 설정.
 3. **lib/계산·티어·스토리지·문구·안전**: 순서대로 구현 + Vitest 통과.
-4. **데이터 (`data/tierMessages.ts`, `data/cardTemplates.ts`)**: 14×4슬롯 카피 + 5템플릿 메타.
+4. **데이터 (`data/tierMessages.ts`, `data/cardTemplates.ts`)**: 14×4슬롯 카피 + MVP 2종 템플릿 메타.
 5. **UI 기본 (`components/ui/`)**: Button, GlassPanel, Toast.
 6. **메인 화면**: WeekSelector, DrinkInputCard 구현 + LocalStorage 연동.
 7. **당일 결과 (`app/result/page.tsx`)**: ResultHero, MetricCard 3종.
