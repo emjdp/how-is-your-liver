@@ -58,36 +58,36 @@
 
 ## 3. 단계별 TODO
 
-### Step 1 — v1.0 문서 업데이트
+### Step 1 — v1.0 문서 업데이트 (완료)
 
 **목적**: MVP 제외 항목을 v1.0 포함 항목으로 옮기고, 새 결정사항을 문서끼리 일관되게 만든다.
 
-- [ ] `docs/PRD.md`
+- [x] `docs/PRD.md`
   - v1.0 스코프 섹션 추가.
   - 카드 5종(당일 4 + 주간 1), 주간 카드, JSON export, 다크 모드 토글, 브랜드 에셋, 소주 잔/하이볼, 사진 배경 카드를 포함으로 명시.
-- [ ] `docs/CALCULATION_RULES.md`
+- [x] `docs/CALCULATION_RULES.md`
   - 4종 단위 표 추가.
   - `sojuGlass: 50ml, ABV 16.5%`.
   - `highball: 350ml, ABV 7.0%`.
   - 소주 1잔 ≈ 6.51g, 하이볼 1잔 ≈ 19.33g.
   - 기존 기록의 누락 필드는 0으로 폴백.
-- [ ] `docs/TECHNICAL_PLAN.md`
+- [x] `docs/TECHNICAL_PLAN.md`
   - `DayRecord` 확장 필드 표기.
   - 스토리지 키는 `hiyl:v1:records` 유지.
   - 테마 키: `hiyl:v1:theme`.
   - JSON export 파일명: `how-is-your-liver-records-YYYY-MM-DD.json`.
   - export용 storage public API 추가 방침 명시. private `readAll()` 직접 사용 금지.
-- [ ] `docs/STORY_CARD_SPEC.md`
+- [x] `docs/STORY_CARD_SPEC.md`
   - `tpl_forecast`, `tpl_warning`, `tpl_weekly` 사양.
   - 사진 배경 카드: 다운스케일 dataURL, 50~65% 어두운 오버레이, 서버 전송 없음.
-- [ ] `docs/DESIGN_SYSTEM.md`
+- [x] `docs/DESIGN_SYSTEM.md`
   - 테마 토글 컴포넌트 사양.
   - `theme-light` / `theme-dark` 클래스와 `prefers-color-scheme` 우선순위.
   - 마스코트 사용 가이드: 메인 제목 우측 작게, 결과/카드 남용 금지.
-- [ ] `docs/TONE_GUIDE.md`
+- [x] `docs/TONE_GUIDE.md`
   - 하이볼 안내 문구 예시.
   - 새 카드 카피 금지어 검사 범위 명시.
-- [ ] `docs/V1_IMPLEMENTATION_PLAN.md`
+- [x] `docs/V1_IMPLEMENTATION_PLAN.md`
   - 사진 배경 카드가 v1.0 필수임을 P1/단계/프롬프트 모두에서 일관되게 유지.
 
 **완료 기준**

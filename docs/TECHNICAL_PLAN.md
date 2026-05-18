@@ -25,9 +25,11 @@ how-is-your-liver/
 │   ├── result/
 │   │   ├── page.tsx        # 당일 결과 (?d=YYYY-MM-DD)
 │   │   └── card/
-│   │       └── page.tsx    # 당일 스토리 카드 (MVP: 2종 템플릿)
+│   │       └── page.tsx    # 당일 스토리 카드 (v1.0: 4종 템플릿)
 │   ├── weekly/
-│   │   └── page.tsx        # 주간 리포트 (스토리 카드는 추후 확장)
+│   │   ├── page.tsx        # 주간 리포트
+│   │   └── card/
+│   │       └── page.tsx    # 주간 스토리 카드 (v1.0 포함)
 │   └── globals.css         # Tailwind v4 + @theme inline + 폰트
 ├── components/
 │   ├── week-selector/
@@ -44,12 +46,17 @@ how-is-your-liver/
 │   │   ├── StoryCardCanvas.tsx
 │   │   ├── templates/
 │   │   │   ├── TplReport.tsx     # MVP
-│   │   │   └── TplOvertime.tsx   # MVP
+│   │   │   ├── TplOvertime.tsx   # MVP
+│   │   │   ├── TplForecast.tsx   # v1.0
+│   │   │   ├── TplWarning.tsx    # v1.0
+│   │   │   └── TplWeekly.tsx     # v1.0
+│   │   ├── PhotoPicker.tsx       # v1.0 사진 배경 카드
 │   │   └── ShareButton.tsx
-│   #   (TplForecast/TplWeekly/TplWarning, CustomBackgroundUploader는 추후 확장 — 파일 생성 X)
 │   └── ui/
 │       ├── Button.tsx
 │       ├── GlassPanel.tsx
+│       ├── Mascot.tsx            # v1.0 마스코트 컴포넌트
+│       ├── ThemeToggle.tsx       # v1.0 테마 토글
 │       └── Toast.tsx
 ├── lib/
 │   ├── calculate.ts        # 알코올/칼로리/처리 추정 시간
@@ -84,22 +91,30 @@ how-is-your-liver/
 - 라우트 매핑 (MVP):
   - `/` 메인
   - `/result?d=YYYY-MM-DD` 당일 결과
-  - `/result/card?d=YYYY-MM-DD` 당일 카드 (2종 템플릿)
+  - `/result/card?d=YYYY-MM-DD` 당일 카드 (v1.0: 4종 템플릿)
   - `/weekly` 주간 리포트
-  - ~~`/weekly/card`~~ 추후 확장
+  - `/weekly/card` 주간 스토리 카드 (v1.0 포함)
 
 ## 핵심 데이터 타입 (`types/record.ts`)
 
 ```ts
-export type DrinkType = "soju" | "beer";
+// v1.0: sojuGlass, highball 추가
+export type DrinkType = "soju" | "beer" | "sojuGlass" | "highball";
 
 export interface DayRecord {
   /** ISO date string, KST 자정 기준 YYYY-MM-DD */
   date: string;
-  soju: number;       // 병 수, integer, 0..30
-  beer: number;       // 잔 수, integer, 0..30
-  updatedAt: number;  // epoch ms
+  soju: number;         // 병 수, integer, 0..30
+  beer: number;         // 잔 수, integer, 0..30
+  sojuGlass?: number;   // 소주 잔 수, integer, 0..30. 없으면 0으로 폴백
+  highball?: number;    // 하이볼 잔 수, integer, 0..30. 없으면 0으로 폴백
+  updatedAt: number;    // epoch ms
 }
+
+// DrinkType 확장 방침:
+// - 새 주종 추가 시 DrinkType 유니온에 추가하고 DRINKS 상수·INPUT_MAX도 동시 갱신.
+// - DayRecord에는 optional 필드로 추가해 기존 저장 데이터와 하위 호환을 유지한다.
+// - 기존 기록의 누락 필드는 스토리지 read layer(lib/storage.ts sanitizeRecord)에서 0으로 폴백한다.
 
 export interface DayCalc {
   alcoholG: number;
@@ -121,9 +136,27 @@ export interface TierResult {
 ```
 
 ## LocalStorage 설계
-- 키: `hiyl:v1:records` — value: `Record<string /* YYYY-MM-DD */, DayRecord>`.
+- 기록 키: `hiyl:v1:records` — value: `Record<string /* YYYY-MM-DD */, DayRecord>`.
+- 테마 키: `hiyl:v1:theme` — value: `"system" | "light" | "dark"`. 기본값 `"system"`.
 - 키 prefix 버저닝(`v1`)으로 향후 마이그레이션 대응.
 - 모든 read/write는 `lib/storage.ts`를 통해서만. SSR 환경 보호(`typeof window === "undefined"` 가드).
+
+### JSON export
+- 파일명: `how-is-your-liver-records-YYYY-MM-DD.json` (YYYY-MM-DD는 export 일자).
+- 형식: `{ version: 1, exportedAt: ISO, records: [...] }`.
+- `lib/storage.ts`에 `getAllRecords()` 또는 `getSanitizedRecords()` public API를 추가한다.
+  - private `readAll()` 직접 참조 금지. export 경로는 반드시 public API를 통한다.
+- 서버 전송 없음. JSON import는 v1.0 제외.
+
+### 브랜드 에셋 위치
+```text
+app/favicon.ico
+public/brand/icon-192.png
+public/brand/icon-512.png
+public/brand/apple-touch-icon.png
+public/brand/og-image.png       ← 1200×630 유지
+public/brand/mascot-main.png
+```
 
 ## 계산/티어/문구 유틸 구조
 - `lib/calculate.ts`: 순수 함수만. React 의존 X. Vitest로 단위 테스트.

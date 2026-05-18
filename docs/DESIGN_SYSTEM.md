@@ -20,7 +20,23 @@ Tailwind v4의 `@theme inline` 변수로 정의한다. (참고: 본 프로젝트
 | `--color-glass` | `rgba(255,255,255,0.55)` | 글래스 표면 |
 | `--color-glass-stroke` | `rgba(15,61,46,0.12)` | 글래스 외곽선 |
 
-다크 모드는 MVP에서 `prefers-color-scheme` 자동 대응만. 별도 토글 UI 없음.
+## 다크 모드 토글 (v1.0)
+
+### 사양
+- 3상태: `system` / `light` / `dark`.
+- 기본값: `system` (OS 설정에 따름).
+- 클릭할 때마다 `system → light → dark → system` 순환.
+- 버튼 크기: 최소 44×44px.
+- 위치: 메인 상단 우측. 결과(`/result`), 주간(`/weekly`), 카드(`/result/card`, `/weekly/card`) 화면에서도 접근 가능.
+
+### 클래스/우선순위
+- `system` 모드: `:root` 클래스 없음. `@media (prefers-color-scheme: dark)` 에 맡김.
+- `light` 모드: `:root.theme-light`. 미디어 쿼리보다 우선.
+- `dark` 모드: `:root.theme-dark`. 미디어 쿼리보다 우선.
+- 선택값은 `hiyl:v1:theme` LocalStorage 키에 저장.
+
+### 스토리 카드 PNG
+- 카드 PNG 색상은 테마 토글에 영향받지 않는다. 카드 배경은 항상 deep-green 그라데이션(또는 사진 오버레이) 고정.
 
 ## 타이포그래피
 - **한글**: Pretendard Variable (셀프 호스팅 또는 CDN). 본문 letter-spacing -2.5%.
@@ -76,6 +92,21 @@ Tailwind v4의 `@theme inline` 변수로 정의한다. (참고: 본 프로젝트
   - Spring 기반 모션 (`{ stiffness: 220, damping: 22 }`).
 - 과한 mascot/스티커 애니메이션 금지.
 - `prefers-reduced-motion: reduce` 사용자에게는 모든 transition 0ms.
+
+## 마스코트 사용 가이드 (v1.0)
+
+- **메인 페이지**: 제목 "당신의 간은 안녕하십니까?" 우측에 작게 배치. 브랜드 정체성 보강 목적.
+- **결과 페이지 / 카드**: 남용 금지. 텍스트 가독성을 해치지 않는 보조 요소로만.
+- **높은 티어(t5/t6)**: 신남·승리·전설 느낌 금지. 지친 표정 또는 절제된 배치.
+- **주의**: 높은 티어에서 마스코트가 보상처럼 보이면 안 된다.
+- 마스코트 파일 없어도 앱이 깨지지 않도록 graceful fallback 필수.
+
+## 사진 배경 카드 디자인 규칙 (v1.0)
+
+- 사진 위에 **50~65% 어두운 오버레이** 필수.
+- 텍스트는 흰색 + 가벼운 drop-shadow로 대비 유지 (WCAG AA 이상).
+- 과음을 자랑처럼 보이게 하는 스티커, 이펙트, 필터 금지.
+- 사진 없으면 기존 deep-green 그라데이션으로 대체.
 
 ## 피해야 할 디자인
 - 빨강/노랑 메인 컬러, 네온, 자극적 술병 일러스트.

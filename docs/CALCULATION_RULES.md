@@ -6,8 +6,10 @@
 
 ```ts
 export const DRINKS = {
-  soju: { mlPerUnit: 360, abv: 0.165, unitLabel: "병" },
-  beer: { mlPerUnit: 500, abv: 0.045, unitLabel: "잔" },
+  soju:      { mlPerUnit: 360, abv: 0.165, unitLabel: "병" },
+  sojuGlass: { mlPerUnit:  50, abv: 0.165, unitLabel: "잔" },
+  beer:      { mlPerUnit: 500, abv: 0.045, unitLabel: "잔" },
+  highball:  { mlPerUnit: 350, abv: 0.070, unitLabel: "잔" },
 } as const;
 
 export const ALCOHOL_DENSITY_G_PER_ML = 0.789;
@@ -19,16 +21,29 @@ export const METABOLISM_G_PER_HOUR = 8;
 export const KCAL_PER_G_ALCOHOL = 7;
 
 // 입력 제한
-export const INPUT_MAX = { soju: 30, beer: 30 } as const;
+export const INPUT_MAX = { soju: 30, sojuGlass: 30, beer: 30, highball: 30 } as const;
 ```
+
+## 4종 단위 표
+
+| 키 | 기준 용량 | ABV | 단위 | 순수 알코올 g |
+|---|---|---|---|---|
+| `soju` | 360ml | 16.5% | 병 | ≈ 46.87g |
+| `sojuGlass` | 50ml | 16.5% | 잔 | ≈ 6.51g |
+| `beer` | 500ml | 4.5% | 잔 | ≈ 17.75g |
+| `highball` | 350ml | 7.0% | 잔 | ≈ 19.33g |
+
+> **하이볼 주의**: 실제 하이볼은 레시피 편차가 크다. 위 수치는 일반 추정치이며, UI에 "하이볼은 일반 레시피 기준 추정입니다." 안내를 표시한다.
 
 ## 순수 알코올 g
 ```
 pureAlcoholG(volumeMl, abv) = volumeMl * abv * 0.789
 ```
 유도된 상수:
-- 소주 1병 = 360 × 0.165 × 0.789 ≈ **46.87 g**
-- 맥주 1잔 = 500 × 0.045 × 0.789 ≈ **17.75 g**
+- 소주 1병  = 360 × 0.165 × 0.789 ≈ **46.87 g**
+- 소주 1잔  =  50 × 0.165 × 0.789 ≈  **6.51 g**
+- 맥주 1잔  = 500 × 0.045 × 0.789 ≈ **17.75 g**
+- 하이볼 1잔 = 350 × 0.070 × 0.789 ≈ **19.33 g**
 
 ## 소주 환산 병 수
 ```
@@ -75,7 +90,8 @@ displayHours = round(hours * 2) / 2   // 0.5h 단위 반올림
 
 - 입력 카드에서 ± 버튼을 한 번이라도 눌러 값을 변경하면(0→1→0 포함) `DayRecord`가 생성·저장된다.
 - 단순 진입(±터치 없음) 후 빠져나가면 `DayRecord`가 생성되지 않는다.
-- 음주일 수 계산식: `records.filter(r => r.soju > 0 || r.beer > 0).length`.
+- 음주일 수 계산식: `records.filter(r => r.soju > 0 || r.beer > 0 || (r.sojuGlass ?? 0) > 0 || (r.highball ?? 0) > 0).length`.
+- 기존 저장 기록에 `sojuGlass` / `highball` 필드가 없으면 `0`으로 폴백한다. 스토리지 키(`hiyl:v1:records`)는 그대로 유지한다.
 
 ## 비정상 입력 방어
 - **음수**: UI에서 차단 (− 버튼 disabled at 0). 데이터 레이어에서도 `Math.max(0, n)`.
@@ -89,6 +105,12 @@ displayHours = round(hours * 2) / 2   // 0.5h 단위 반올림
   - 소주 환산 = 146.99 / 46.87 ≈ **3.1병**
   - kcal = 147 × 7 ≈ **1029 kcal**
   - 처리 추정 시간 = 147 / 8 ≈ 18.4 → **약 18.5시간** (운전 가능 시점 아님)
+
+- 소주 1병 + 소주 2잔 + 맥주 1잔 + 하이볼 1잔
+  - 알코올 = 46.87 + 2 × 6.51 + 17.75 + 19.33 = 46.87 + 13.02 + 17.75 + 19.33 = **96.97 g**
+  - 소주 환산 = 96.97 / 46.87 ≈ **2.1병**
+  - kcal = 97 × 7 ≈ **679 kcal**
+  - 처리 추정 시간 = 97 / 8 ≈ 12.1 → **약 12시간** (운전 가능 시점 아님)
 
 ## UI 표시 방식
 - 모든 수치 옆에 단위 표시 (`병`, `g`, `kcal`, `시간`).
