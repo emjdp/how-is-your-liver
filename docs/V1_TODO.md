@@ -327,13 +327,13 @@
 
 **목적**: 새 주종이 결과와 최근 7일 리포트에 자연스럽게 반영된다.
 
-- [ ] `components/result/ResultClient.tsx`
+- [x] `components/result/ResultClient.tsx`
   - 입력 내역에 4종 표기.
   - 0인 행은 숨기거나 흐리게 표시.
-- [ ] `components/result/WeeklyClient.tsx`
+- [x] `components/result/WeeklyClient.tsx`
   - `computeWeek` 합산 반영 확인.
   - `WeeklyBarChart`가 alcoholG 기반으로 정상 반영되는지 확인.
-- [ ] `tests/weekly.test.ts`
+- [x] `tests/weekly.test.ts`
   - 4종이 섞인 7일 데이터에서 `totalAlcoholG`, `drinkingDays`, `peakDay` 검증.
 
 **완료 기준**

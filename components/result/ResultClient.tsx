@@ -127,18 +127,39 @@ export function ResultClient({ date }: { date: string }) {
             입력 내역
           </p>
           <div className="flex flex-col gap-2">
-            <div className="flex justify-between text-[0.9375rem]">
-              <span style={{ color: 'var(--color-muted)' }}>소주</span>
-              <span style={{ color: 'var(--color-ink)' }}>
-                {record.soju}병
-              </span>
-            </div>
-            <div className="flex justify-between text-[0.9375rem]">
-              <span style={{ color: 'var(--color-muted)' }}>맥주</span>
-              <span style={{ color: 'var(--color-ink)' }}>
-                {record.beer}잔
-              </span>
-            </div>
+            {[
+              { label: '소주(병)', value: record.soju, unit: '병' },
+              { label: '소주(잔)', value: record.sojuGlass ?? 0, unit: '잔' },
+              { label: '맥주', value: record.beer, unit: '잔' },
+              { label: '하이볼', value: record.highball ?? 0, unit: '잔' },
+            ].map(({ label, value, unit }) => (
+              <div key={label} className="flex justify-between text-[0.9375rem]">
+                <span
+                  style={{
+                    color: 'var(--color-muted)',
+                    opacity: value > 0 ? 1 : 0.4,
+                  }}
+                >
+                  {label}
+                </span>
+                <span
+                  style={{
+                    color: value > 0 ? 'var(--color-ink)' : 'var(--color-muted)',
+                    opacity: value > 0 ? 1 : 0.5,
+                  }}
+                >
+                  {value}{unit}
+                </span>
+              </div>
+            ))}
+            {(record.highball ?? 0) > 0 && (
+              <p
+                className="text-[0.6875rem]"
+                style={{ color: 'var(--color-muted)' }}
+              >
+                하이볼은 일반 레시피 기준 추정입니다.
+              </p>
+            )}
             <div
               className="flex justify-between text-[0.9375rem] pt-2 mt-1"
               style={{ borderTop: '1px solid var(--color-glass-stroke)' }}
