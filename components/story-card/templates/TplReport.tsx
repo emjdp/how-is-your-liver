@@ -52,7 +52,13 @@ function MetricBlock({ label, value }: MetricBlockProps) {
   )
 }
 
-export function TplReport({ props }: { props: CardProps }) {
+export function TplReport({
+  props,
+  backgroundImage,
+}: {
+  props: CardProps
+  backgroundImage?: string
+}) {
   const isHigh = isHighTier(props.tierId)
 
   const accentColor = isHigh ? C_WARN : C_LIME
@@ -74,15 +80,41 @@ export function TplReport({ props }: { props: CardProps }) {
           '"Pretendard Variable", Pretendard, "Inter Variable", Inter, sans-serif',
       }}
     >
-      {/* 배경 그라데이션 레이어 */}
-      <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          background: `linear-gradient(170deg, ${C_BG_TOP} 0%, ${C_BG_BOT} 100%)`,
-          filter: isHigh ? 'saturate(0.8) brightness(0.9)' : undefined,
-        }}
-      />
+      {backgroundImage ? (
+        <>
+          {/* 사진 배경 (dataURL → cross-origin 문제 없음) */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={backgroundImage}
+            alt=""
+            style={{
+              position: 'absolute',
+              inset: 0,
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+            }}
+          />
+          {/* 50~65% 어두운 오버레이 — 텍스트 대비 유지 */}
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              background: 'linear-gradient(170deg, rgba(11,20,17,0.58) 0%, rgba(11,20,17,0.65) 100%)',
+            }}
+          />
+        </>
+      ) : (
+        /* 기존 그라데이션 배경 */
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            background: `linear-gradient(170deg, ${C_BG_TOP} 0%, ${C_BG_BOT} 100%)`,
+            filter: isHigh ? 'saturate(0.8) brightness(0.9)' : undefined,
+          }}
+        />
+      )}
 
       {/* SVG 노이즈 텍스처 (feTurbulence) */}
       <svg

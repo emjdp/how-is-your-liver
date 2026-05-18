@@ -8,8 +8,11 @@ import { getDayTier, isHighTier } from '@/lib/tiers'
 import { buildCardProps, getDayTemplates } from '@/data/cardTemplates'
 import { safetyLineCard } from '@/lib/safety-copy'
 import { StoryCardCanvas } from './StoryCardCanvas'
+import { PhotoPicker } from './PhotoPicker'
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
 import type { DayRecord, DayCalc, TierResult } from '@/types/record'
+
+const PHOTO_BG_TEMPLATES = new Set(['tpl_report', 'tpl_overtime'])
 
 const PENDING_TOAST_KEY = 'hiyl:pending_toast'
 
@@ -19,6 +22,7 @@ const DAY_TEMPLATES = getDayTemplates()
 export function StoryCardClient({ date }: { date: string }) {
   const router = useRouter()
   const [templateIdx, setTemplateIdx] = useState(0)
+  const [photoDataUrl, setPhotoDataUrl] = useState<string | null>(null)
   const [cardData, setCardData] = useState<{
     record: DayRecord
     calc: DayCalc
@@ -71,6 +75,9 @@ export function StoryCardClient({ date }: { date: string }) {
     cardData.tier,
   )
   const props = { ...rawProps, safetyLine: safetyLineCard }
+
+  const supportsPhotoBg = PHOTO_BG_TEMPLATES.has(template.id)
+  const activeBackground = supportsPhotoBg ? photoDataUrl : null
 
   return (
     <div
@@ -163,11 +170,17 @@ export function StoryCardClient({ date }: { date: string }) {
           </div>
         </div>
 
+        {/* 사진 배경 — tpl_report, tpl_overtime에서만 노출 */}
+        {supportsPhotoBg && (
+          <PhotoPicker value={photoDataUrl} onChange={setPhotoDataUrl} />
+        )}
+
         {/* 카드 미리보기 + 공유 버튼 */}
         <StoryCardCanvas
           templateId={template.id}
           props={props}
           isHighTier={isHighTier(cardData.tier.id)}
+          backgroundImage={activeBackground ?? undefined}
         />
       </div>
     </div>

@@ -17,13 +17,37 @@ interface StoryCardCanvasProps {
   templateId: string
   props: DayCardProps | WeekCardProps
   isHighTier?: boolean
+  /** tpl_report, tpl_overtime에만 전달 — 다운스케일된 dataURL */
+  backgroundImage?: string
 }
 
 function isDayProps(props: DayCardProps | WeekCardProps): props is DayCardProps {
   return 'date' in props
 }
 
-export function StoryCardCanvas({ templateId, props, isHighTier = false }: StoryCardCanvasProps) {
+async function waitForImages(root: HTMLElement): Promise<void> {
+  const images = Array.from(root.querySelectorAll('img'))
+  await Promise.all(
+    images.map(async (img) => {
+      if (img.complete && img.naturalWidth > 0) return
+      if (typeof img.decode === 'function') {
+        try {
+          await img.decode()
+          return
+        } catch {
+          // Fall through to load/error events; Safari can reject decode for data URLs.
+        }
+      }
+      await new Promise<void>((resolve) => {
+        const done = () => resolve()
+        img.addEventListener('load', done, { once: true })
+        img.addEventListener('error', done, { once: true })
+      })
+    })
+  )
+}
+
+export function StoryCardCanvas({ templateId, props, isHighTier = false, backgroundImage }: StoryCardCanvasProps) {
   const canvasRef = useRef<HTMLDivElement>(null)
   const wrapperRef = useRef<HTMLDivElement>(null)
   const [scale, setScale] = useState(0.31)
@@ -45,6 +69,7 @@ export function StoryCardCanvas({ templateId, props, isHighTier = false }: Story
     if (typeof document !== 'undefined' && document.fonts?.ready) {
       await document.fonts.ready
     }
+    await waitForImages(canvasRef.current)
     const dataUrl = await toPng(canvasRef.current, {
       pixelRatio: 1,
       cacheBust: true,
@@ -74,9 +99,9 @@ export function StoryCardCanvas({ templateId, props, isHighTier = false }: Story
     if (!dayProps) return null
     switch (templateId) {
       case 'tpl_report':
-        return <TplReport props={dayProps} />
+        return <TplReport props={dayProps} backgroundImage={backgroundImage} />
       case 'tpl_overtime':
-        return <TplOvertime props={dayProps} />
+        return <TplOvertime props={dayProps} backgroundImage={backgroundImage} />
       case 'tpl_forecast':
         return <TplForecast props={dayProps} />
       case 'tpl_warning':

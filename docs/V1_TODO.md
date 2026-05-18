@@ -350,21 +350,21 @@
 
 **목적**: 사용자가 업로드한 사진을 당일 카드 일부 템플릿의 배경으로 사용한다.
 
-- [ ] 지원 범위
+- [x] 지원 범위
   - `tpl_report`, `tpl_overtime` 우선 적용.
   - `tpl_forecast`, `tpl_warning`은 v1.1 검토.
-- [ ] `components/story-card/PhotoPicker.tsx` 신규
+- [x] `components/story-card/PhotoPicker.tsx` 신규
   - `<input type="file" accept="image/*">`.
   - 10MB 초과 차단.
   - 업로드 즉시 canvas 또는 동등한 방식으로 다운스케일.
   - 저장 상태에는 다운스케일된 dataURL만 보관.
   - 권장 출력: 1080×1920 cover crop 또는 긴 변 2160px 이하.
-- [ ] `TplReport.tsx`, `TplOvertime.tsx`
+- [x] `TplReport.tsx`, `TplOvertime.tsx`
   - `backgroundImage` prop 추가.
   - 사진 배경 + 50~65% 어두운 오버레이.
   - 텍스트 대비 유지.
   - 사진 없으면 기존 그라데이션.
-- [ ] `StoryCardClient.tsx`
+- [x] `StoryCardClient.tsx`
   - PhotoPicker UI 노출.
   - 사진 제거 버튼.
   - "사진은 기기 안에서만 사용되고 서버로 전송되지 않아요." 안내.
