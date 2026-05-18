@@ -8,6 +8,7 @@ import { getDayTier, isHighTier } from '@/lib/tiers'
 import { buildCardProps, CARD_TEMPLATES } from '@/data/cardTemplates'
 import { safetyLineCard } from '@/lib/safety-copy'
 import { StoryCardCanvas } from './StoryCardCanvas'
+import { ThemeToggle } from '@/components/ui/ThemeToggle'
 import type { DayRecord, DayCalc, TierResult } from '@/types/record'
 
 const PENDING_TOAST_KEY = 'hiyl:pending_toast'
@@ -92,16 +93,18 @@ export function StoryCardClient({ date }: { date: string }) {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
+              flexShrink: 0,
             }}
           >
             ←
           </button>
           <p
-            className="text-[1.0625rem] font-semibold"
+            className="flex-1 text-[1.0625rem] font-semibold"
             style={{ color: 'var(--color-deep-green)' }}
           >
             스토리 카드
           </p>
+          <ThemeToggle />
         </div>
 
         {/* 템플릿 선택 탭 */}

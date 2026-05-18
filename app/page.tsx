@@ -14,6 +14,7 @@ import { DrinkInputCard } from '@/components/drink-input/DrinkInputCard'
 import { Button } from '@/components/ui/Button'
 import { Toast } from '@/components/ui/Toast'
 import { Mascot } from '@/components/ui/Mascot'
+import { ThemeToggle } from '@/components/ui/ThemeToggle'
 import { PENDING_TOAST_KEY } from '@/components/result/ResultClient'
 import type { DayRecord } from '@/types/record'
 
@@ -189,9 +190,12 @@ export default function Home() {
             </h1>
             <Mascot size={48} alt="" className="flex-shrink-0" />
           </div>
-          <p className="text-[0.75rem] mt-1" style={{ color: 'var(--color-muted)' }}>
-            소주·맥주 음주량을 기록하고, 오늘의 간 상태를 확인하세요.
-          </p>
+          <div className="flex items-center justify-between mt-2">
+            <p className="text-[0.75rem]" style={{ color: 'var(--color-muted)' }}>
+              소주·맥주 음주량을 기록하고, 오늘의 간 상태를 확인하세요.
+            </p>
+            <ThemeToggle />
+          </div>
         </div>
 
         {/* 음주 입력 카드 */}

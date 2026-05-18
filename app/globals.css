@@ -31,7 +31,7 @@
   --fg: var(--color-ink);
 }
 
-/* ── 다크 모드 (자동 대응, 토글 UI 없음) ────────────────── */
+/* ── 다크 모드 (자동 대응: system 모드 / 클래스 없음) ─────── */
 @media (prefers-color-scheme: dark) {
   :root {
     --color-bg: #111a17;
@@ -41,6 +41,26 @@
     --color-glass: rgba(28, 38, 34, 0.7);
     --color-glass-stroke: rgba(200, 242, 108, 0.1);
   }
+}
+
+/* ── 명시적 다크 모드 (토글로 선택 — 미디어 쿼리보다 높은 명시도) */
+:root.theme-dark {
+  --color-bg: #111a17;
+  --color-surface: #1c2622;
+  --color-ink: #edecea;
+  --color-muted: #8fa89e;
+  --color-glass: rgba(28, 38, 34, 0.7);
+  --color-glass-stroke: rgba(200, 242, 108, 0.1);
+}
+
+/* ── 명시적 라이트 모드 (OS 다크여도 강제 라이트) ────────── */
+:root.theme-light {
+  --color-bg: #f7f4ec;
+  --color-surface: #ffffff;
+  --color-ink: #0b1411;
+  --color-muted: #6b7370;
+  --color-glass: rgba(255, 255, 255, 0.55);
+  --color-glass-stroke: rgba(15, 61, 46, 0.12);
 }
 
 /* ── 기본 바디 스타일 ────────────────────────────────────── */

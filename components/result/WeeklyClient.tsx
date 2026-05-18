@@ -9,6 +9,7 @@ import { getWeekTier, isHighTier } from '@/lib/tiers'
 import { safetyLineLong } from '@/lib/safety-copy'
 import { Button } from '@/components/ui/Button'
 import { Toast } from '@/components/ui/Toast'
+import { ThemeToggle } from '@/components/ui/ThemeToggle'
 import { ResultHero } from './ResultHero'
 import { WeeklyBarChart } from './WeeklyBarChart'
 import type { BarDay } from './WeeklyBarChart'
@@ -102,12 +103,15 @@ export function WeeklyClient() {
     >
       <div className="flex-1 px-5 pt-8 pb-60 flex flex-col gap-6">
         {/* 페이지 헤더 */}
-        <p
-          className="text-[0.875rem]"
-          style={{ color: 'var(--color-muted)' }}
-        >
-          최근 7일 간 정산
-        </p>
+        <div className="flex items-center justify-between">
+          <p
+            className="text-[0.875rem]"
+            style={{ color: 'var(--color-muted)' }}
+          >
+            최근 7일 간 정산
+          </p>
+          <ThemeToggle />
+        </div>
 
         {/* 주간 티어 + 카피 */}
         <ResultHero tier={tier} />

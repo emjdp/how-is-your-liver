@@ -63,14 +63,24 @@ export const viewport: Viewport = {
   themeColor: "#0f3d2e",
 };
 
+// 새로고침 시 테마 깜빡임 방지 — 하이드레이션 전에 localStorage를 읽어 클래스를 적용한다.
+// html 요소의 class는 이 스크립트가 먼저 변경하므로 suppressHydrationWarning 필요.
+const THEME_INIT_SCRIPT = `(function(){try{var m=localStorage.getItem('hiyl:v1:theme');if(m==='dark')document.documentElement.classList.add('theme-dark');else if(m==='light')document.documentElement.classList.add('theme-light');}catch(e){}})();`
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko" className={`${inter.variable} h-full antialiased`}>
+    <html
+      lang="ko"
+      className={`${inter.variable} h-full antialiased`}
+      suppressHydrationWarning
+    >
       <head>
+        {/* 테마 초기화: 하이드레이션 전 실행 → 깜빡임 방지 */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         {/* Pretendard Variable — 한글 웹폰트 CDN */}
         <link
           rel="stylesheet"

@@ -8,6 +8,7 @@ import { getDayTier, isHighTier } from '@/lib/tiers'
 import { formatKoreanDate } from '@/lib/date'
 import { safetyLineLong } from '@/lib/safety-copy'
 import { Button } from '@/components/ui/Button'
+import { ThemeToggle } from '@/components/ui/ThemeToggle'
 import { ResultHero } from './ResultHero'
 import { MetricCard } from './MetricCard'
 import type { DayRecord } from '@/types/record'
@@ -77,12 +78,15 @@ export function ResultClient({ date }: { date: string }) {
     >
       <div className="flex-1 px-5 pt-8 pb-60 flex flex-col gap-6">
         {/* 날짜 헤더 */}
-        <p
-          className="text-[0.875rem]"
-          style={{ color: 'var(--color-muted)' }}
-        >
-          {formatKoreanDate(date)}
-        </p>
+        <div className="flex items-center justify-between">
+          <p
+            className="text-[0.875rem]"
+            style={{ color: 'var(--color-muted)' }}
+          >
+            {formatKoreanDate(date)}
+          </p>
+          <ThemeToggle />
+        </div>
 
         {/* 티어 배지 + 카피 */}
         <ResultHero tier={tier} />

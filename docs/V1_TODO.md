@@ -100,25 +100,25 @@
 
 ---
 
-### Step 2 — 브랜드 에셋 / 메타데이터 적용
+### Step 2 — 브랜드 에셋 / 메타데이터 적용 (완료)
 
 **목적**: 이미 준비된 favicon, app icon, OG 이미지, 마스코트를 실제 앱에 연결한다.
 
-- [ ] 구현 전 Next 16 metadata docs 확인.
-- [ ] `app/layout.tsx`
+- [x] 구현 전 Next 16 metadata docs 확인.
+- [x] `app/layout.tsx`
   - `metadata.icons` 추가.
   - `metadata.openGraph` 추가.
   - `openGraph.images`는 `/brand/og-image.png`, `width: 1200`, `height: 630`.
   - `viewport.themeColor` 유지 또는 라이트/다크 대응 필요 여부 판단.
-- [ ] `components/ui/Mascot.tsx` 신규
+- [x] `components/ui/Mascot.tsx` 신규
   - `next/image` 사용.
   - 기본 `src="/brand/mascot-main.png"`.
   - 이미지 로드 실패 시 숨김 처리.
   - `size`, `className`, `alt` prop 지원.
-- [ ] `app/page.tsx`
+- [x] `app/page.tsx`
   - 메인 제목 우측에 마스코트 작게 배치.
   - 360px에서 제목/마스코트 겹침 없음.
-- [ ] 확인
+- [x] 확인
   - `public/brand/og-image.png`가 1200×630인지 확인.
   - 브라우저 탭 favicon 확인.
   - view-source 또는 빌드 결과에서 OG meta 확인.
@@ -134,29 +134,29 @@
 
 ---
 
-### Step 3 — 테마 토글
+### Step 3 — 테마 토글 (완료)
 
 **목적**: `system / light / dark` 선택을 제공하되 기존 시스템 자동 대응과 충돌하지 않게 한다.
 
-- [ ] 구현 전 Next 16 script/hydration docs 확인.
-- [ ] `app/globals.css`
+- [x] 구현 전 Next 16 script/hydration docs 확인.
+- [x] `app/globals.css`
   - 기존 `@media (prefers-color-scheme: dark)` 유지.
   - `:root.theme-dark` 추가.
   - `:root.theme-light` 추가.
   - `system` 모드에서는 클래스를 제거하고 미디어 쿼리에 맡김.
-- [ ] `lib/theme.ts` 신규
+- [x] `lib/theme.ts` 신규
   - `ThemeMode = "system" | "light" | "dark"`.
   - `getTheme()`, `setTheme(mode)`, `applyTheme(mode)`.
   - LocalStorage key: `hiyl:v1:theme`.
-- [ ] `components/ui/ThemeToggle.tsx` 신규
+- [x] `components/ui/ThemeToggle.tsx` 신규
   - 단일 3상태 순환 버튼.
   - 크기 44×44 이상.
   - `aria-label`에 현재 모드와 다음 모드 표시.
-- [ ] `app/layout.tsx`
+- [x] `app/layout.tsx`
   - 깜빡임 방지 inline script 또는 Next 권장 방식 적용.
   - `<html suppressHydrationWarning>` 필요 여부 확인 후 적용.
-- [ ] 메인/결과/주간/카드 화면에서 접근 가능하게 배치.
-- [ ] `tests/theme.test.ts` 신규.
+- [x] 메인/결과/주간/카드 화면에서 접근 가능하게 배치.
+- [x] `tests/theme.test.ts` 신규.
 
 **완료 기준**
 
