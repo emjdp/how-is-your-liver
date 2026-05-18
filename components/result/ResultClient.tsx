@@ -43,8 +43,8 @@ export function ResultClient({ date }: { date: string }) {
   }, [])
 
   const handleEditClick = useCallback(() => {
-    router.push('/')
-  }, [router])
+    router.push(`/?d=${date}`)
+  }, [router, date])
 
   const handleCardClick = useCallback(() => {
     router.push(`/result/card?d=${date}`)

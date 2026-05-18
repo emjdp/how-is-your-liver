@@ -56,7 +56,9 @@ export default function Home() {
     initializedRef.current = true
     const data = loadInit()
     setInit(data)
-    setSelectedDate(data.selectedDate)
+    const urlDate = new URLSearchParams(window.location.search).get('d') ?? ''
+    const initialDate = (urlDate && data.dates.includes(urlDate)) ? urlDate : data.selectedDate
+    setSelectedDate(initialDate)
     setRecords(data.records)
 
     const pendingMsg = sessionStorage.getItem(PENDING_TOAST_KEY) ?? ''
