@@ -299,15 +299,15 @@
 
 **목적**: 소주 병/소주 잔/맥주/하이볼 4종을 10초 안에 입력 가능하게 한다.
 
-- [ ] `components/drink-input/StepperRow.tsx`
+- [x] `components/drink-input/StepperRow.tsx`
   - 4종 type 지원.
   - 라벨: `소주(병)`, `소주(잔)`, `맥주`, `하이볼`.
   - 보조 텍스트: 360ml / 50ml / 500ml / 350ml.
-- [ ] `components/drink-input/DrinkInputCard.tsx`
+- [x] `components/drink-input/DrinkInputCard.tsx`
   - 순서: 소주(병) → 소주(잔) → 맥주 → 하이볼.
   - 하이볼 안내: "하이볼은 일반 레시피 기준 추정입니다."
   - 카드 높이 폭증 방지.
-- [ ] `app/page.tsx`
+- [x] `app/page.tsx`
   - 단일 `handleDrinkChange(key, value)` 권장.
   - 저장 객체에 4필드 포함.
 - [ ] 360/375/414px 수동 확인.

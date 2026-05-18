@@ -16,7 +16,7 @@ import { Toast } from '@/components/ui/Toast'
 import { Mascot } from '@/components/ui/Mascot'
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
 import { PENDING_TOAST_KEY } from '@/components/result/ResultClient'
-import type { DayRecord } from '@/types/record'
+import type { DayRecord, DrinkType } from '@/types/record'
 
 type SaveStatus = 'idle' | 'saving' | 'saved'
 
@@ -51,6 +51,7 @@ export default function Home() {
 
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const initializedRef = useRef(false)
+  const recordsRef = useRef<Record<string, DayRecord>>({})
 
   // 초기화: 브라우저에서만 LocalStorage 접근
   useEffect(() => {
@@ -61,6 +62,7 @@ export default function Home() {
     const urlDate = new URLSearchParams(window.location.search).get('d') ?? ''
     const initialDate = (urlDate && data.dates.includes(urlDate)) ? urlDate : data.selectedDate
     setSelectedDate(initialDate)
+    recordsRef.current = data.records
     setRecords(data.records)
 
     const pendingMsg = sessionStorage.getItem(PENDING_TOAST_KEY) ?? ''
@@ -73,21 +75,17 @@ export default function Home() {
   const storageWarning = init?.storageWarning ?? false
 
   const currentRecord = records[selectedDate]
-  const soju = currentRecord?.soju ?? 0
-  const beer = currentRecord?.beer ?? 0
+  const soju      = currentRecord?.soju      ?? 0
+  const sojuGlass = currentRecord?.sojuGlass ?? 0
+  const beer      = currentRecord?.beer      ?? 0
+  const highball  = currentRecord?.highball  ?? 0
 
   // ± 버튼 조작 시에만 호출 — DayRecord 생성 조건
   const scheduleSave = useCallback(
-    (date: string, newSoju: number, newBeer: number) => {
+    (record: DayRecord) => {
       if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
       setSaveStatus('saving')
       saveTimerRef.current = setTimeout(() => {
-        const record: DayRecord = {
-          date,
-          soju: newSoju,
-          beer: newBeer,
-          updatedAt: Date.now(),
-        }
         saveRecord(record)
         setSaveStatus('saved')
         setTimeout(() => setSaveStatus('idle'), 1500)
@@ -96,40 +94,25 @@ export default function Home() {
     []
   )
 
-  const handleSojuChange = useCallback(
-    (value: number) => {
-      const clamped = clampInput(value, 'soju')
-      const prevBeer = records[selectedDate]?.beer ?? 0
-      setRecords((prev) => ({
-        ...prev,
-        [selectedDate]: {
-          date: selectedDate,
-          soju: clamped,
-          beer: prevBeer,
-          updatedAt: Date.now(),
-        },
-      }))
-      scheduleSave(selectedDate, clamped, prevBeer)
+  const handleDrinkChange = useCallback(
+    (type: DrinkType, value: number) => {
+      if (!selectedDate) return
+      const clamped = clampInput(value, type)
+      const cur = recordsRef.current[selectedDate]
+      const updated: DayRecord = {
+        date: selectedDate,
+        soju: type === 'soju' ? clamped : cur?.soju ?? 0,
+        sojuGlass: type === 'sojuGlass' ? clamped : cur?.sojuGlass ?? 0,
+        beer: type === 'beer' ? clamped : cur?.beer ?? 0,
+        highball: type === 'highball' ? clamped : cur?.highball ?? 0,
+        updatedAt: Date.now(),
+      }
+      const nextRecords = { ...recordsRef.current, [selectedDate]: updated }
+      recordsRef.current = nextRecords
+      setRecords(nextRecords)
+      scheduleSave(updated)
     },
-    [selectedDate, records, scheduleSave]
-  )
-
-  const handleBeerChange = useCallback(
-    (value: number) => {
-      const clamped = clampInput(value, 'beer')
-      const prevSoju = records[selectedDate]?.soju ?? 0
-      setRecords((prev) => ({
-        ...prev,
-        [selectedDate]: {
-          date: selectedDate,
-          soju: prevSoju,
-          beer: clamped,
-          updatedAt: Date.now(),
-        },
-      }))
-      scheduleSave(selectedDate, prevSoju, clamped)
-    },
-    [selectedDate, records, scheduleSave]
+    [selectedDate, scheduleSave]
   )
 
   const handleDateSelect = useCallback((date: string) => {
@@ -192,7 +175,7 @@ export default function Home() {
           </div>
           <div className="flex items-center justify-between mt-2">
             <p className="text-[0.75rem]" style={{ color: 'var(--color-muted)' }}>
-              소주·맥주 음주량을 기록하고, 오늘의 간 상태를 확인하세요.
+              소주·맥주·하이볼 음주량을 기록하고, 오늘의 간 상태를 확인하세요.
             </p>
             <ThemeToggle />
           </div>
@@ -203,9 +186,10 @@ export default function Home() {
           <DrinkInputCard
             date={selectedDate}
             soju={soju}
+            sojuGlass={sojuGlass}
             beer={beer}
-            onSojuChange={handleSojuChange}
-            onBeerChange={handleBeerChange}
+            highball={highball}
+            onDrinkChange={handleDrinkChange}
             saveStatus={saveStatus}
           />
         )}

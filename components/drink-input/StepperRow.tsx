@@ -1,18 +1,24 @@
 'use client'
 
+import type { DrinkType } from '@/types/record'
 import { DRINKS, INPUT_MAX } from '@/lib/constants'
 
 interface StepperRowProps {
-  type: 'soju' | 'beer'
+  type: DrinkType
   value: number
   onChange: (newValue: number) => void
 }
 
-const LABELS: Record<'soju' | 'beer', string> = { soju: '소주', beer: '맥주' }
+const LABELS: Record<DrinkType, string> = {
+  soju:      '소주(병)',
+  sojuGlass: '소주(잔)',
+  beer:      '맥주',
+  highball:  '하이볼',
+}
 
-function mlHint(type: 'soju' | 'beer', value: number): string {
-  const ml = DRINKS[type].mlPerUnit * value
-  return value === 0 ? `${DRINKS[type].mlPerUnit}ml / 1${DRINKS[type].unitLabel}` : `${ml}ml`
+function mlHint(type: DrinkType): string {
+  const { mlPerUnit, unitLabel } = DRINKS[type]
+  return `${mlPerUnit}ml / 1${unitLabel}`
 }
 
 export function StepperRow({ type, value, onChange }: StepperRowProps) {
@@ -26,17 +32,14 @@ export function StepperRow({ type, value, onChange }: StepperRowProps) {
     <div className="flex items-center justify-between gap-4">
       {/* 라벨 영역 */}
       <div className="flex-1 min-w-0">
-        <p className="text-[0.9375rem] font-semibold" style={{ color: 'var(--color-ink)' }}>
+        <p
+          className="text-[0.9375rem] font-semibold truncate"
+          style={{ color: 'var(--color-ink)' }}
+        >
           {LABELS[type]}
-          <span
-            className="text-[0.75rem] font-normal ml-1"
-            style={{ color: 'var(--color-muted)' }}
-          >
-            / {DRINKS[type].unitLabel}
-          </span>
         </p>
         <p className="text-[0.75rem] mt-0.5" style={{ color: 'var(--color-muted)' }}>
-          {mlHint(type, value)}
+          {mlHint(type)}
         </p>
       </div>
 

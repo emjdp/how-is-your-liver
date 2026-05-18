@@ -5,25 +5,28 @@ import { formatKoreanDate } from '@/lib/date'
 import { computeDay } from '@/lib/calculate'
 import { getDayTier } from '@/lib/tiers'
 import { StepperRow } from './StepperRow'
+import type { DrinkType } from '@/types/record'
 
 interface DrinkInputCardProps {
   date: string
   soju: number
+  sojuGlass: number
   beer: number
-  onSojuChange: (v: number) => void
-  onBeerChange: (v: number) => void
+  highball: number
+  onDrinkChange: (type: DrinkType, value: number) => void
   saveStatus: 'idle' | 'saving' | 'saved'
 }
 
 export function DrinkInputCard({
   date,
   soju,
+  sojuGlass,
   beer,
-  onSojuChange,
-  onBeerChange,
+  highball,
+  onDrinkChange,
   saveStatus,
 }: DrinkInputCardProps) {
-  const calc = computeDay({ date, soju, beer, updatedAt: 0 })
+  const calc = computeDay({ date, soju, sojuGlass, beer, highball, updatedAt: 0 })
   const tier = getDayTier(calc.alcoholG)
 
   return (
@@ -57,14 +60,28 @@ export function DrinkInputCard({
           </span>
         </div>
 
-        {/* 소주 스테퍼 */}
-        <StepperRow type="soju" value={soju} onChange={onSojuChange} />
+        {/* 소주(병) */}
+        <StepperRow type="soju" value={soju} onChange={(v) => onDrinkChange('soju', v)} />
 
-        {/* 구분선 */}
         <div className="h-px" style={{ background: 'var(--color-glass-stroke)' }} />
 
-        {/* 맥주 스테퍼 */}
-        <StepperRow type="beer" value={beer} onChange={onBeerChange} />
+        {/* 소주(잔) */}
+        <StepperRow type="sojuGlass" value={sojuGlass} onChange={(v) => onDrinkChange('sojuGlass', v)} />
+
+        <div className="h-px" style={{ background: 'var(--color-glass-stroke)' }} />
+
+        {/* 맥주 */}
+        <StepperRow type="beer" value={beer} onChange={(v) => onDrinkChange('beer', v)} />
+
+        <div className="h-px" style={{ background: 'var(--color-glass-stroke)' }} />
+
+        {/* 하이볼 */}
+        <StepperRow type="highball" value={highball} onChange={(v) => onDrinkChange('highball', v)} />
+
+        {/* 하이볼 안내 */}
+        <p className="text-[0.6875rem] -mt-2" style={{ color: 'var(--color-muted)' }}>
+          하이볼은 일반 레시피 기준 추정입니다.
+        </p>
 
         {/* 미니 티어 */}
         <div
